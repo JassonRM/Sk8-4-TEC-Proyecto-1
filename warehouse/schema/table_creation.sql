@@ -109,6 +109,21 @@ CREATE TABLE IF NOT EXISTS Puesto
     Descripcion VARCHAR(100)
 );
 
+CREATE TABLE IF NOT EXISTS Sucursal
+(
+    IdSucursal  SERIAL PRIMARY KEY,
+    Codigo      VARCHAR(40) NOT NULL,
+    Nombre      VARCHAR(40) NOT NULL,
+    Descripcion VARCHAR(100),
+    IdDireccion INT         NOT NULL,
+    IdEstado    INT         NOT NULL,
+
+    FOREIGN KEY (IdEstado)
+        REFERENCES Estado (IdEstado),
+
+    FOREIGN KEY (IdDireccion)
+        REFERENCES Direccion (IdDireccion)
+);
 
 CREATE TABLE IF NOT EXISTS EmpleadoPuesto
 (
@@ -280,7 +295,6 @@ CREATE TABLE IF NOT EXISTS Proveedor
         REFERENCES Estado (IdEstado)
 );
 
-
 CREATE TABLE IF NOT EXISTS Pedido
 (
     IdPedido    SERIAL PRIMARY KEY,
@@ -296,6 +310,19 @@ CREATE TABLE IF NOT EXISTS Pedido
         REFERENCES Empleado (IdEmpleado)
 );
 
+CREATE TABLE IF NOT EXISTS PedidoPaquete
+(
+    IdPedido INT NOT NULL,
+    IdSKU    INT NOT NULL,
+    Cantidad INT NOT NULL,
+    Costo    INT NOT NULL,
+
+    FOREIGN KEY (IdPedido)
+        REFERENCES Pedido (IdPedido),
+
+    FOREIGN KEY (IdSKU)
+        REFERENCES SKU (IdSKU)
+);
 
 CREATE TABLE IF NOT EXISTS MetodoPago
 (

@@ -160,6 +160,22 @@ CREATE TABLE IF NOT EXISTS SKU
 );
 
 
+CREATE TABLE IF NOT EXISTS Articulo
+(
+    IdArticulo INT AUTO_INCREMENT PRIMARY KEY,
+    IdSKU      INT         NOT NULL,
+    Codigo     VARCHAR(40) NOT NULL,
+    IdEstado   INT         NOT NULL,
+
+    FOREIGN KEY (IdSKU)
+        REFERENCES SKU (IdSKU),
+
+    FOREIGN KEY (IdEstado)
+        REFERENCES Estado (IdEstado)
+);
+
+
+
 CREATE TABLE IF NOT EXISTS MetodoPago
 (
     IdMetodoPago INT AUTO_INCREMENT PRIMARY KEY,
@@ -171,13 +187,13 @@ CREATE TABLE IF NOT EXISTS MetodoPago
 CREATE TABLE IF NOT EXISTS Promocion
 (
     IdPromocion INT AUTO_INCREMENT PRIMARY KEY,
-    IdSKU       INT      NOT NULL,
+    IdArticulo  INT      NOT NULL,
     Inicio      DATETIME NOT NULL,
     Fin         DATETIME NOT NULL,
     Descuento   INT      NOT NULL,
 
-    FOREIGN KEY (IdSKU)
-        REFERENCES SKU (IdSKU)
+    FOREIGN KEY (IdArticulo)
+        REFERENCES Articulo (IdArticulo)
 );
 
 
@@ -218,13 +234,13 @@ CREATE TABLE IF NOT EXISTS PromocionFactura
 
 CREATE TABLE IF NOT EXISTS Venta
 (
-    IdSKU     INT NOT NULL,
-    IdFactura INT NOT NULL,
-    Cantidad  INT NOT NULL,
-    Precio    INT NOT NULL,
+    IdArticulo INT NOT NULL,
+    IdFactura  INT NOT NULL,
+    Cantidad   INT NOT NULL,
+    Precio     INT NOT NULL,
 
-    FOREIGN KEY (IdSKU)
-        REFERENCES SKU (IdSKu),
+    FOREIGN KEY (IdArticulo)
+        REFERENCES Articulo (IdArticulo),
 
     FOREIGN KEY (IdFactura)
         REFERENCES Factura (IdFactura)

@@ -269,21 +269,6 @@ CREATE TABLE IF NOT EXISTS EnvioPaquete
         REFERENCES Articulo (IdArticulo)
 );
 
-
-CREATE TABLE IF NOT EXISTS PedidoPaquete
-(
-    IdPedido   INT NOT NULL,
-    IdArticulo INT NOT NULL,
-    Costo      INT NOT NULL,
-
-    FOREIGN KEY (IdPedido)
-        REFERENCES Pedido (IdPedido),
-
-    FOREIGN KEY (IdArticulo)
-        REFERENCES Articulo (IdArticulo)
-);
-
-
 CREATE TABLE IF NOT EXISTS Proveedor
 (
     IdProveedor SERIAL PRIMARY KEY,

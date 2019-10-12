@@ -16,6 +16,10 @@ cur = conn.cursor()
 
 # Execute the inserts on each table
 
+# Add seeds
+sql_file = open('../schema/seeds.sql','r', encoding='utf-8')
+cur.execute(sql_file.read())
+
 # Fill table Camion
 placas = gen.gen_data_series(CantidadCamiones, data_type='license_plate')
 marcas = ["Freightliner", "International", "Kenworth", "Volvo", "Mercedes-Benz", "Hyundai"]
@@ -49,14 +53,21 @@ for provincia in range(1, 8):
 cur.executemany("INSERT INTO Canton (IdCanton, Nombre, IdProvincia) VALUES (%s, %s, %s)", cantones)
 cur.executemany("INSERT INTO Distrito (IdDistrito, Nombre, IdCanton) VALUES (%s, %s, %s)", distritos)
 
+# Add seeds2
+sql_file = open('../schema/seeds2.sql','r', encoding='utf-8')
+cur.execute(sql_file.read())
+
 # #Fill tables Empleado, Persona and Direccion
 empleados = []
-idpersona = 1
 personas = []
 direcciones = []
 
 cur.execute("SELECT COUNT(*) FROM Sucursal")
 CantidadSucursales = cur.fetchone()[0]
+cur.execute("SELECT COUNT(*) FROM Puesto")
+CantidadPuestos = cur.fetchone()[0]
+cur.execute("SELECT COUNT(*) FROM Direccion")
+ContadorDireccion = cur.fetchone()[0]
 
 detalles1 = gen.gen_data_series(CantidadEmpleados, data_type='street_address')
 detalles2 = gen.gen_data_series(CantidadEmpleados, data_type='zipcode')
@@ -68,7 +79,7 @@ for i in range(1, CantidadEmpleados + 1):
     detalle1 = detalles1[i-1]
     detalle2 = detalles2[i-1]
     distrito = randint(1, len(distritos))
-    direcciones.append((i, distrito, detalle1, detalle2))
+    direcciones.append((ContadorDireccion + i, distrito, detalle1, detalle2))
 
     # Persona
     identificacion = cedulas[i-1]
@@ -80,10 +91,19 @@ for i in range(1, CantidadEmpleados + 1):
     nacimiento = fakepersons[i-1]['FechaNacimiento']
     registro = fakepersons[i-1]['FechaRegistro']
     estado = randint(1, 2)
-    personas.append((i, identificacion, nombre, apellido1, apellido2, telefono, correo, nacimiento, registro, estado, i))
+    personas.append((i, identificacion, nombre, apellido1, apellido2, telefono, correo, nacimiento, registro, estado, ContadorDireccion + i))
+
+    # Empleados
+    sucursal = randint(1, CantidadSucursales)
+    puesto = randint(1, CantidadPuestos)
+    salario = randint(400000, 1500000)
+    fecha = fakepersons[i-1]['FechaRegistro']
+    estado = randint(1, 2)
+    empleados.append((i, i, puesto, sucursal, salario, fecha, estado))
 
 cur.executemany("INSERT INTO Direccion (IdDireccion, IdDistrito, Detalle1, Detalle2) VALUES (%s, %s, %s, %s)", direcciones)
 cur.executemany("INSERT INTO Persona (IdPersona, Identificacion, Nombre, Apellido1, Apellido2, Telefono, Correo, FechaNacimiento, FechaRegistro, IdEstado, IdDireccion) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", personas)
+cur.executemany("INSERT INTO Empleado (IdEmpleado, IdPersona, IdPuesto, IdSucursal, Salario, Fecha, IdEstado) VALUES (%s, %s, %s, %s, %s, %s, %s)", empleados)
 
 
 # Make the changes to the database persistent

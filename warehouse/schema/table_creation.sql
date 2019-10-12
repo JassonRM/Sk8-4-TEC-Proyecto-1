@@ -224,10 +224,10 @@ CREATE TABLE IF NOT EXISTS SucursalArticulo
 
 CREATE TABLE IF NOT EXISTS Camion
 (
-    IdCamion    SERIAL PRIMARY KEY,
-    Placa       VARCHAR(20) NOT NULL,
-    Descripcion VARCHAR(100),
-    IdEstado    INT         NOT NULL,
+    IdCamion SERIAL PRIMARY KEY,
+    Placa    VARCHAR(20) NOT NULL,
+    Marca    VARCHAR(100),
+    IdEstado INT         NOT NULL,
 
     FOREIGN KEY (IdEstado)
         REFERENCES Estado (IdEstado)

@@ -91,23 +91,13 @@ CREATE TABLE IF NOT EXISTS Cliente
 );
 
 
-CREATE TABLE IF NOT EXISTS Empleado
-(
-    IdEmpleado  SERIAL PRIMARY KEY,
-    IdPersona   INT NOT NULL,
-    Descripcion VARCHAR(100),
-
-    FOREIGN KEY (IdPersona)
-        REFERENCES Persona (IdPersona)
-);
-
-
 CREATE TABLE IF NOT EXISTS Puesto
 (
     IdPuesto    SERIAL PRIMARY KEY,
     Nombre      VARCHAR(40) NOT NULL,
     Descripcion VARCHAR(100)
 );
+
 
 CREATE TABLE IF NOT EXISTS Sucursal
 (
@@ -125,9 +115,11 @@ CREATE TABLE IF NOT EXISTS Sucursal
         REFERENCES Direccion (IdDireccion)
 );
 
-CREATE TABLE IF NOT EXISTS EmpleadoPuesto
+
+CREATE TABLE IF NOT EXISTS Empleado
 (
-    IdEmpleado INT  NOT NULL,
+    IdEmpleado  SERIAL PRIMARY KEY,
+    IdPersona   INT NOT NULL,
     IdPuesto   INT  NOT NULL,
     IdSucursal INT  NOT NULL,
     Salario    INT  NOT NULL,
@@ -144,7 +136,10 @@ CREATE TABLE IF NOT EXISTS EmpleadoPuesto
         REFERENCES Sucursal (IdSucursal),
 
     FOREIGN KEY (IdEstado)
-        REFERENCES Estado (IdEstado)
+        REFERENCES Estado (IdEstado),
+
+    FOREIGN KEY (IdPersona)
+        REFERENCES Persona (IdPersona)
 );
 
 

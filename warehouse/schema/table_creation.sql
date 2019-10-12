@@ -118,8 +118,8 @@ CREATE TABLE IF NOT EXISTS Sucursal
 
 CREATE TABLE IF NOT EXISTS Empleado
 (
-    IdEmpleado  SERIAL PRIMARY KEY,
-    IdPersona   INT NOT NULL,
+    IdEmpleado SERIAL PRIMARY KEY,
+    IdPersona  INT  NOT NULL,
     IdPuesto   INT  NOT NULL,
     IdSucursal INT  NOT NULL,
     Salario    INT  NOT NULL,
@@ -155,13 +155,11 @@ CREATE TABLE IF NOT EXISTS SKU
 (
     IdSKU            SERIAL PRIMARY KEY,
     Codigo           VARCHAR(40) NOT NULL,
-    Nombre           VARCHAR(40) NOT NULL,
-    Descripcion      VARCHAR(100),
     IdCategoria      INT         NOT NULL,
     IdEstado         INT         NOT NULL,
     PrecioActual     INT         NOT NULL,
     FechaRegistro    DATE        NOT NULL,
-    FechaCaducidad   DATE        NOT NULL,
+    Garantia         INT         NOT NULL,
     DetalleUbicacion VARCHAR(100),
 
     FOREIGN KEY (IdCategoria)
@@ -185,7 +183,6 @@ CREATE TABLE IF NOT EXISTS Articulo
     FOREIGN KEY (IdEstado)
         REFERENCES Estado (IdEstado)
 );
-
 
 CREATE TABLE IF NOT EXISTS Sucursal
 (
@@ -268,7 +265,6 @@ CREATE TABLE IF NOT EXISTS Proveedor
 (
     IdProveedor SERIAL PRIMARY KEY,
     Nombre      VARCHAR(40) NOT NULL,
-    Descripcion VARCHAR(100),
     IdEstado    INT         NOT NULL,
 
     FOREIGN KEY (IdEstado)
@@ -279,7 +275,6 @@ CREATE TABLE IF NOT EXISTS Pedido
 (
     IdPedido    SERIAL PRIMARY KEY,
     Fecha       DATE NOT NULL,
-    Descripcion VARCHAR(100),
     IdProveedor INT  NOT NULL,
     IdEncargado INT  NOT NULL,
 

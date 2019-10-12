@@ -153,6 +153,21 @@ for i in range(1, CantidadSKUs + 1):
     skus.append((i, codigo, categoria, estado, precio, fecha, garantia, detalle))
 cur.executemany("INSERT INTO SKU (IdSKU, Codigo, IdCategoria, IdEstado, PrecioActual, FechaRegistro, Garantia, DetalleUbicacion)  VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", skus)
 
+# Fill table SucursalSKU
+sucursalSKUs = []
+for sku in range(1, CantidadSKUs):
+    storeList = []
+    for i in range(1, CantidadSucursales):
+        store = randint(1, CantidadSucursales - 1)
+        if store not in storeList:
+            sucursalSKUs.append((sku, store))
+        if random() > 0.5:
+            continue
+
+
+
+cur.executemany("INSERT INTO SucursalSKU (IdSKU, IdSucursal) VALUES  (%s, %s)", sucursalSKUs)
+
 # Fill table Articulo
 codigos = gen.gen_data_series(CantidadArticulos, data_type='ssn')
 
@@ -160,10 +175,10 @@ articulos = []
 for i in range(1, CantidadArticulos + 1):
     sku = randint(1, len(skus))
     codigo = codigos[i-1]
-    estado = randint(1, 2)
-    articulos.append((i, sku, codigo, estado))
-cur.executemany("INSERT INTO Articulo (IdArticulo, IdSKU, Codigo, IdEstado)  VALUES (%s, %s, %s, %s)", articulos)
-
+    costo = randrange(500, 10000, 500)
+    pedido = randint(1, CantidadPedidos)
+    articulos.append((i, sku, codigo, costo, pedido, 1))
+cur.executemany("INSERT INTO Articulo (IdArticulo, IdSKU, Codigo, Costo, IdPedido, IdEstadoArticulo)  VALUES (%s, %s, %s, %s, %s, %s)", articulos)
 
 
 # Make the changes to the database persistent

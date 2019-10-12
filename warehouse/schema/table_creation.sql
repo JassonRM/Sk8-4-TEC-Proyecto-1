@@ -169,19 +169,60 @@ CREATE TABLE IF NOT EXISTS SKU
         REFERENCES Estado (IdEstado)
 );
 
+CREATE TABLE IF NOT EXISTS Proveedor
+(
+    IdProveedor SERIAL PRIMARY KEY,
+    Nombre      VARCHAR(40) NOT NULL,
+    IdEstado    INT         NOT NULL,
+
+    FOREIGN KEY (IdEstado)
+        REFERENCES Estado (IdEstado)
+);
+
+CREATE TABLE IF NOT EXISTS Pedido
+(
+    IdPedido    SERIAL PRIMARY KEY,
+    Fecha       DATE NOT NULL,
+    IdProveedor INT  NOT NULL,
+    IdEncargado INT  NOT NULL,
+
+    FOREIGN KEY (IdProveedor)
+        REFERENCES Proveedor (IdProveedor),
+
+    FOREIGN KEY (IdEncargado)
+        REFERENCES Empleado (IdEmpleado)
+);
+
+
+CREATE TABLE IF NOT EXISTS EstadoArticulo
+(
+    IdEstadoArticulo SERIAL PRIMARY KEY,
+    Nombre           VARCHAR(40)
+);
+
 
 CREATE TABLE IF NOT EXISTS Articulo
 (
-    IdArticulo SERIAL PRIMARY KEY,
-    IdSKU      INT         NOT NULL,
-    Codigo     VARCHAR(40) NOT NULL,
-    IdEstado   INT         NOT NULL,
+    IdArticulo       SERIAL PRIMARY KEY,
+    IdSKU            INT         NOT NULL,
+    Codigo           VARCHAR(40) NOT NULL,
+    Costo            INT         NOT NULL,
+    IdPedido         INT         NOT NULL,
+    IdEstadoArticulo INT         NOT NULL,
+    IdSucursal       INT,
 
     FOREIGN KEY (IdSKU)
         REFERENCES SKU (IdSKU),
 
-    FOREIGN KEY (IdEstado)
-        REFERENCES Estado (IdEstado)
+    FOREIGN KEY (IdEstadoArticulo)
+        REFERENCES EstadoArticulo (IdEstadoArticulo),
+
+    FOREIGN KEY (IdSucursal)
+        REFERENCES Sucursal (IdSucursal),
+
+    FOREIGN KEY (IdPedido)
+        REFERENCES Pedido (IdPedido)
+
 );
 
 CREATE TABLE IF NOT EXISTS Sucursal
@@ -201,18 +242,17 @@ CREATE TABLE IF NOT EXISTS Sucursal
 );
 
 
-CREATE TABLE IF NOT EXISTS SucursalArticulo
+CREATE TABLE IF NOT EXISTS SucursalSKU
 (
     IdSucursal INT NOT NULL,
-    IdArticulo INT NOT NULL,
+    IdSKU      INT NOT NULL,
 
     FOREIGN KEY (IdSucursal)
         REFERENCES Sucursal (IdSucursal),
 
-    FOREIGN KEY (IdArticulo)
-        REFERENCES Articulo (IdArticulo)
+    FOREIGN KEY (IdSKU)
+        REFERENCES SKU (IdSKU)
 );
-
 
 CREATE TABLE IF NOT EXISTS Camion
 (
@@ -259,44 +299,6 @@ CREATE TABLE IF NOT EXISTS EnvioPaquete
 
     FOREIGN KEY (IdArticulo)
         REFERENCES Articulo (IdArticulo)
-);
-
-CREATE TABLE IF NOT EXISTS Proveedor
-(
-    IdProveedor SERIAL PRIMARY KEY,
-    Nombre      VARCHAR(40) NOT NULL,
-    IdEstado    INT         NOT NULL,
-
-    FOREIGN KEY (IdEstado)
-        REFERENCES Estado (IdEstado)
-);
-
-CREATE TABLE IF NOT EXISTS Pedido
-(
-    IdPedido    SERIAL PRIMARY KEY,
-    Fecha       DATE NOT NULL,
-    IdProveedor INT  NOT NULL,
-    IdEncargado INT  NOT NULL,
-
-    FOREIGN KEY (IdProveedor)
-        REFERENCES Proveedor (IdProveedor),
-
-    FOREIGN KEY (IdEncargado)
-        REFERENCES Empleado (IdEmpleado)
-);
-
-CREATE TABLE IF NOT EXISTS PedidoPaquete
-(
-    IdPedido INT NOT NULL,
-    IdSKU    INT NOT NULL,
-    Cantidad INT NOT NULL,
-    Costo    INT NOT NULL,
-
-    FOREIGN KEY (IdPedido)
-        REFERENCES Pedido (IdPedido),
-
-    FOREIGN KEY (IdSKU)
-        REFERENCES SKU (IdSKU)
 );
 
 CREATE TABLE IF NOT EXISTS MetodoPago

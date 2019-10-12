@@ -7,9 +7,14 @@ VALUES
 
 INSERT INTO estado (descripcion)
 VALUES
-       ('Disponible'),
-       ('Vendido'),
-       ('Garantía');
+       ('Activo'),
+       ('Inactivo');
+
+-- INSERT INTO estadoArticulo (descripcion)
+-- VALUES
+--        ('Disponible'),
+--        ('Vendido'),
+--        ('Garantía');
 
 INSERT INTO categoria (nombre, descripcion)
 VALUES
@@ -27,32 +32,11 @@ INSERT INTO provincia (nombre, idpais)
 VALUES
     ('San José', 1),
     ('Alajuela', 1),
-    ('Cartago', 1);
-
-INSERT INTO canton (nombre, idprovincia)
-VALUES
-    ('San José', 1),
-    ('Alajuela', 2),
-    ('Cartago', 3);
-
-INSERT INTO distrito (nombre, idcanton)
-VALUES
-    ('Pavas', 1),
-    ('Alajuela', 2),
-    ('Oriental', 3);
-
-
-INSERT INTO direccion (iddistrito, detalle1, detalle2)
-VALUES
-    (2, 'Avenida 2', 'Frente al parque'),
-    (1, 'Avenida 4', 'Frente al KFC'),
-    (3, 'Calle 3', 'Frente a la iglesia');
-
-INSERT INTO sucursal (codigo, nombre, descripcion, iddireccion, idestado)
-VALUES
-       ('01', 'Ska8-4-TEC Alajuela', 'Tienda original', 1, 1),
-       ('02', 'Ska8-4-TEC Cartago', 'Tienda religiosa', 3, 1),
-       ('03', 'Ska8-4-TEC San José', 'Tienda super ventas', 2, 2);
+    ('Cartago', 1),
+    ('Heredia', 1),
+    ('Guanacaste', 1),
+    ('Puntarenas', 1),
+    ('Limón', 1);
 
 INSERT INTO puesto (nombre, descripcion) VALUES
 ('Administrador', 'Se encarga de administrar cada una de las sucursales'),

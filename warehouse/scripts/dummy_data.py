@@ -6,6 +6,11 @@ import json
 
 CantidadCamiones = 10
 CantidadEmpleados = 15
+CantidadProveedores = 10
+CantidadPedidos = 30
+CantidadSKUs = 1000
+CantidadArticulos = 15000
+
 
 # Create random generator
 gen = pydbgen.pydb()
@@ -104,6 +109,61 @@ for i in range(1, CantidadEmpleados + 1):
 cur.executemany("INSERT INTO Direccion (IdDireccion, IdDistrito, Detalle1, Detalle2) VALUES (%s, %s, %s, %s)", direcciones)
 cur.executemany("INSERT INTO Persona (IdPersona, Identificacion, Nombre, Apellido1, Apellido2, Telefono, Correo, FechaNacimiento, FechaRegistro, IdEstado, IdDireccion) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", personas)
 cur.executemany("INSERT INTO Empleado (IdEmpleado, IdPersona, IdPuesto, IdSucursal, Salario, Fecha, IdEstado) VALUES (%s, %s, %s, %s, %s, %s, %s)", empleados)
+
+
+# Fill table Proveedor
+nombres = gen.gen_data_series(CantidadProveedores, data_type='company')
+proveedores = []
+for i in range(1, CantidadProveedores + 1):
+    nombre = nombres[i-1]
+    estado = randint(1, 2)
+    proveedores.append((i, nombre, estado))
+cur.executemany("INSERT INTO Proveedor (IdProveedor, Nombre, IdEstado) VALUES (%s, %s, %s)", proveedores)
+
+# Fill table Pedido
+fechas = gen.gen_data_series(CantidadPedidos, data_type='date')
+
+pedidos = []
+for i in range(1, CantidadPedidos + 1):
+    fecha = fechas[i-1]
+    proveedor = randint(1, CantidadProveedores)
+    encargado = randint(1, CantidadEmpleados)
+    estado = randint(1, 2)
+    pedidos.append((i, fecha, proveedor, encargado))
+cur.executemany("INSERT INTO Pedido (IdPedido, Fecha, IdProveedor, IdEncargado) VALUES (%s, %s, %s, %s)", pedidos)
+
+# Fill table SKU
+codigos = gen.gen_data_series(CantidadSKUs, data_type='ssn')
+fechas = gen.gen_data_series(CantidadSKUs, data_type='date')
+garantias = [7, 30, 60, 90, 365]
+detalles = ['Mostrador', 'Ventana', 'Pasillo principal', 'Pasillo de acuerdo a la categoria']
+
+cur.execute("SELECT COUNT(*) FROM Categoria")
+CantidadCategorias = cur.fetchone()[0]
+
+skus = []
+for i in range(1, CantidadSKUs + 1):
+    codigo = codigos[i-1]
+    categoria = randint(1, CantidadCategorias)
+    estado = randint(1, 2)
+    precio = randrange(5000, 50000, 500)
+    fecha = fechas[i-1]
+    garantia = choice(garantias)
+    detalle = choice(detalles)
+    skus.append((i, codigo, categoria, estado, precio, fecha, garantia, detalle))
+cur.executemany("INSERT INTO SKU (IdSKU, Codigo, IdCategoria, IdEstado, PrecioActual, FechaRegistro, Garantia, DetalleUbicacion)  VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", skus)
+
+# Fill table Articulo
+codigos = gen.gen_data_series(CantidadArticulos, data_type='ssn')
+
+articulos = []
+for i in range(1, CantidadArticulos + 1):
+    sku = randint(1, len(skus))
+    codigo = codigos[i-1]
+    estado = randint(1, 2)
+    articulos.append((i, sku, codigo, estado))
+cur.executemany("INSERT INTO Articulo (IdArticulo, IdSKU, Codigo, IdEstado)  VALUES (%s, %s, %s, %s)", articulos)
+
 
 
 # Make the changes to the database persistent

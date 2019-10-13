@@ -42,8 +42,8 @@ def initBranches():
     )
     branch3db = branch3.cursor()
 
-    branchList = [branch1]#, branch2, branch3]
-    cursorList = [branch1db]#, branch2db, branch3db]
+    branchList = [branch1, branch2, branch3]
+    cursorList = [branch1db, branch2db, branch3db]
 
 
     # Insert Pais, Provincia, Canton, Distrito

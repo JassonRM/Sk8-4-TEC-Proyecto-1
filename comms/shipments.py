@@ -42,8 +42,8 @@ def generateShipments():
     )
     branch3db = branch3.cursor()
 
-    branchList = [branch1]#, branch2, branch3]
-    cursorList = [branch1db]#, branch2db, branch3db]
+    branchList = [branch1, branch2, branch3]
+    cursorList = [branch1db, branch2db, branch3db]
     # Generate shipments with a truck
 
     warehousedb.execute("SELECT COUNT(*) FROM Sucursal")

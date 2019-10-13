@@ -167,13 +167,14 @@ CREATE TABLE IF NOT EXISTS MetodoPago
 CREATE TABLE IF NOT EXISTS Promocion
 (
     IdPromocion INT AUTO_INCREMENT PRIMARY KEY,
-    IdArticulo  INT      NOT NULL,
-    Inicio      DATETIME NOT NULL,
-    Fin         DATETIME NOT NULL,
-    Descuento   INT      NOT NULL,
+    IdSKU       INT          NOT NULL,
+    Descripcion VARCHAR(100) NOT NULL,
+    Inicio      DATETIME     NOT NULL,
+    Fin         DATETIME     NOT NULL,
+    Descuento   INT          NOT NULL,
 
-    FOREIGN KEY (IdArticulo)
-        REFERENCES Articulo (IdArticulo)
+    FOREIGN KEY (IdSKU)
+        REFERENCES SKU (IdSKU)
 );
 
 
@@ -182,9 +183,9 @@ CREATE TABLE IF NOT EXISTS Factura
     IdFactura       INT AUTO_INCREMENT PRIMARY KEY,
     Codigo          VARCHAR(40) NOT NULL,
     Fecha           DATE        NOT NULL,
-    SubTotal        INT         NOT NULL,
-    Impuestos       INT         NOT NULL,
-    PuntosOtorgados INT         NOT NULL,
+    SubTotal        INT,
+    Impuestos       INT,
+    PuntosOtorgados INT,
     IdCliente       INT         NOT NULL,
     IdEmpleado      INT         NOT NULL,
     IdMetodoPago    INT         NOT NULL,

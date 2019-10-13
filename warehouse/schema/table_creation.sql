@@ -81,13 +81,17 @@ CREATE TABLE IF NOT EXISTS Persona
 
 CREATE TABLE IF NOT EXISTS Cliente
 (
-    IdCliente   SERIAL PRIMARY KEY,
-    IdPersona   INT NOT NULL,
-    Descripcion VARCHAR(100),
-    Puntos      INT NOT NULL,
+    IdCliente     SERIAL PRIMARY KEY,
+    IdPersona     INT  NOT NULL,
+    Descripcion   VARCHAR(100),
+    Puntos        INT  NOT NULL,
+    FechaRegistro DATE NOT NULL,
+    IdEstado      INT  NOT NULL,
 
     FOREIGN KEY (IdPersona)
-        REFERENCES Persona (IdPersona)
+        REFERENCES Persona (IdPersona),
+    FOREIGN KEY (IdEstado)
+        REFERENCES Estado (IdEstado)
 );
 
 
@@ -308,29 +312,36 @@ CREATE TABLE IF NOT EXISTS MetodoPago
 
 CREATE TABLE IF NOT EXISTS Promocion
 (
-    IdPromocion SERIAL PRIMARY KEY,
-    IdArticulo  INT       NOT NULL,
-    Inicio      TIMESTAMP NOT NULL,
-    Fin         TIMESTAMP NOT NULL,
-    Descuento   INT       NOT NULL,
+    IdPromocion         SERIAL PRIMARY KEY,
+    IdPromocionSucursal INT          NOT NULL,
+    IdSucursal          INT          NOT NULL,
+    IdDKU               INT          NOT NULL,
+    Descripcion         VARCHAR(100) NOT NULL,
+    Inicio              TIMESTAMP    NOT NULL,
+    Fin                 TIMESTAMP    NOT NULL,
+    Descuento           INT          NOT NULL,
 
-    FOREIGN KEY (IdArticulo)
-        REFERENCES Articulo (IdArticulo)
+    FOREIGN KEY (IdSucursal)
+        REFERENCES Sucursal (IdSucursal),
+
+    FOREIGN KEY (IdDKU)
+        REFERENCES SKU (IdSKU)
 );
 
 
 CREATE TABLE IF NOT EXISTS Factura
 (
-    IdFactura       SERIAL PRIMARY KEY,
-    Codigo          VARCHAR(40) NOT NULL,
-    Fecha           DATE        NOT NULL,
-    SubTotal        INT         NOT NULL,
-    Impuestos       INT         NOT NULL,
-    PuntosOtorgados INT         NOT NULL,
-    IdSucursal      INT         NOT NULL,
-    IdCliente       INT         NOT NULL,
-    IdEmpleado      INT         NOT NULL,
-    IdMetodoPago    INT         NOT NULL,
+    IdFactura         SERIAL PRIMARY KEY,
+    IdFacturaSucursal INT         NOT NULL,
+    Codigo            VARCHAR(40) NOT NULL,
+    Fecha             DATE        NOT NULL,
+    SubTotal          INT         NOT NULL,
+    Impuestos         INT         NOT NULL,
+    PuntosOtorgados   INT         NOT NULL,
+    IdSucursal        INT         NOT NULL,
+    IdCliente         INT         NOT NULL,
+    IdEmpleado        INT         NOT NULL,
+    IdMetodoPago      INT         NOT NULL,
 
     FOREIGN KEY (IdSucursal)
         REFERENCES Sucursal (IdSucursal),

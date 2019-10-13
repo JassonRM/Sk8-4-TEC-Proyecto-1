@@ -27,42 +27,54 @@ def cierreCaja(sucursal):
     b_cursor.callproc("CierreCajaFacturas")
     for result in b_cursor.stored_results():
         for factura in result.fetchall():
-            w_cursor.executemany(
+            w_cursor.execute(
                 "INSERT INTO Factura (IdFacturaSucursal, Codigo, Fecha, SubTotal, Impuestos, PuntosOtorgados, IdCliente, IdEmpleado, IdMetodoPago, IdSucursal) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
                 factura + (idSucursal,))
-
+    warehouse.commit()
     # move ventas from branch to warehouse
     b_cursor.callproc("CierreCajaVentas")
     for result in b_cursor.stored_results():
         for venta in result.fetchall():
-            idFactura = w_cursor.execute(
+            w_cursor.execute(
                 "SELECT IdFactura FROM Factura WHERE IdFacturaSucursal = %s AND IdSucursal = %s",
                 (venta[1], idSucursal))
-            w_cursor.executemany(
+            idFactura = w_cursor.fetchone()[0]
+            w_cursor.execute(
                 "INSERT INTO Venta (IdArticulo, IdFactura, Precio) VALUES (%s, %s, %s)",
                 (venta[0], idFactura, venta[2]))
+
+            if venta[2] < 0:  # fue devolución
+                w_cursor.execute(
+                    "UPDATE Articulo SET IdEstadoArticulo = %s WHERE IdArticulo = %s",
+                    (4, venta[0]))
+            else:
+                w_cursor.execute(
+                    "UPDATE Articulo SET IdEstadoArticulo = %s WHERE IdArticulo = %s",
+                    (3, venta[0]))
 
     # move Promociones from branch to warehouse
     b_cursor.callproc("CierreCajaPromociones")
     for result in b_cursor.stored_results():
         for promocion in result.fetchall():
-            w_cursor.executemany(
-                "INSERT INTO Promocion (IdPromocionSucursal, IdSKU, Descripcion, Inicio, Fin, Descuento, IdSucursal) VALUES (%s, %s, %s, %s, %s, %s)",
+            w_cursor.execute(
+                "INSERT INTO Promocion (IdPromocionSucursal, IdSKU, Descripcion, Inicio, Fin, Descuento, IdSucursal) VALUES (%s, %s, %s, %s, %s, %s, %s)",
                 promocion + (idSucursal,))
 
     # move PromocionFactura from branch to warehouse
     b_cursor.callproc("CierreCajaPromocionFactura")
     for result in b_cursor.stored_results():
         for promocionFactura in result.fetchall():
-            idFactura = w_cursor.execute(
+            w_cursor.execute(
                 "SELECT IdFactura FROM Factura WHERE IdFacturaSucursal = %s AND IdSucursal = %s",
                 (promocionFactura[1], idSucursal))
-            w_cursor.executemany(
+            idFactura = w_cursor.fetchone()[0]
+            w_cursor.execute(
                 "INSERT INTO PromocionFactura (IdPromocion, IdFactura) VALUES (%s, %s)",
                 (promocionFactura[0], idFactura))
 
     # close connections
     warehouse.commit()
+    branch.commit()
     w_cursor.close()
     b_cursor.close()
     warehouse.close()
@@ -144,15 +156,11 @@ def newPromo(idSKU, description, start, finish, discount):
 def newSale(articulos, codigoFactura, fecha, porcentajeImpuestos, porcentajePuntos,
             idCliente,
             idEmpleado,
-            metodoPago):
-    branch = mysql.connector.connect(host="localhost", user="root", database="sk8", passwd="salchipapa101")
+            idMetodoPago, sucursal):
+    branch = mysql.connector.connect(host="localhost", user="root", database=sucursal, passwd="salchipapa101")
     warehouse = psycopg2.connect(dbname="sk8_warehouse", user="postgres", password="salchipapa101")
     w_cursor = warehouse.cursor()
     b_cursor = branch.cursor()
-
-    # get metodoPago
-    b_cursor.execute("SELECT IdMetodoPago FROM MetodoPago WHERE Metodo = %s", (metodoPago,))
-    idMetodoPago = b_cursor.fetchone()[0]
 
     # get estadoArticulo for a sold article
     b_cursor.execute("SELECT IdEstadoArticulo FROM EstadoArticulo WHERE Nombre = %s", ('Vendido',))
@@ -168,33 +176,32 @@ def newSale(articulos, codigoFactura, fecha, porcentajeImpuestos, porcentajePunt
     idArticulosVendidos = []
     idPromociones = []
     for idArticulo in articulos:
-        b_cursor.execute("UPDATE Articulo SET IdEstadoArticulo = %d WHERE IdArticulo = %d AND IdEstadoArticulo = %d ",
+        b_cursor.execute("UPDATE Articulo SET IdEstadoArticulo = %s WHERE IdArticulo = %s AND IdEstadoArticulo = %s ",
                          (estadoVendido, idArticulo, estadoInventario))
         branch.commit()
         if b_cursor.rowcount != 0:
             if crearFactura:
                 crearFactura = False
                 b_cursor.execute(
-                    "INSERT INTO Factura (Codigo, Fecha, IdCliente, IdEmpleado, IdMetodoPago) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+                    "INSERT INTO Factura (Codigo, Fecha, IdCliente, IdEmpleado, IdMetodoPago) VALUES (%s, %s, %s, %s, %s)",
                     (codigoFactura, fecha, idCliente, idEmpleado, idMetodoPago))
                 branch.commit()
                 idFactura = b_cursor.lastrowid
             b_cursor.execute(
-                "SELECT S.Precio FROM SKU S INNER JOIN Articulo A ON S.IdSKU = A.IdSKU WHERE A.IdArticulo = %s",
+                "SELECT S.PrecioActual FROM SKU S INNER JOIN Articulo A ON S.IdSKU = A.IdSKU WHERE A.IdArticulo = %s",
                 (idArticulo,))
             precio = b_cursor.fetchone()[0]
             b_cursor.execute(
-                "SELECT P.Descuento, P.IdPromocion FROM  SKU S INNER JOIN Promocion P  ON  S.IdSKU = P.IdSKU INNER JOIN Articulo A ON P.IdSKU = A.IdSKU WHERE A.IdArticulo = %s",
+                "SELECT P.Descuento, P.IdPromocion FROM  SKU S INNER JOIN Promocion P  ON  S.IdSKU = P.IdSKU INNER JOIN Articulo A ON P.IdSKU = A.IdSKU WHERE A.IdArticulo = %s AND P.Fin > CURRENT_TIMESTAMP()",
                 (idArticulo,))
-
-            if b_cursor.rowcount == 0:
-                descuento = 0
-            else:
-                descuento = b_cursor.fetchone()[0]
+            promo = b_cursor.fetchone()
+            descuento = 0
+            if promo != None:
+                descuento = promo[0]/100
                 b_cursor.execute(
                     "INSERT INTO PromocionFactura (IdPromocion, IdFactura) VALUES (%s, %s)",
-                    (b_cursor.fetchone()[1], idFactura))
-                idPromociones.append(b_cursor.fetchone()[1])
+                    (promo[1], idFactura))
+                idPromociones.append(promo[1])
             b_cursor.execute(
                 "INSERT INTO Venta (IdArticulo, IdFactura, Precio) VALUES (%s, %s, %s)",
                 (idArticulo, idFactura, precio * (1 - descuento)))
@@ -203,8 +210,9 @@ def newSale(articulos, codigoFactura, fecha, porcentajeImpuestos, porcentajePunt
             precioTotal += precio * (1 - descuento)
 
     w_cursor.execute("SELECT Puntos FROM Cliente WHERE IdCliente = %s", (idCliente,))
-    puntos = b_cursor.fetchone()[0]
-    if metodoPago == 'Puntos':
+    puntos = w_cursor.fetchone()[0]
+    puntosObtenidos = 0
+    if idMetodoPago == 4:  # puntos
         if puntos < precioTotal * (1 + porcentajeImpuestos):
             b_cursor.execute(
                 "DELETE FROM Factura WHERE IdFactura = %s",
@@ -215,26 +223,34 @@ def newSale(articulos, codigoFactura, fecha, porcentajeImpuestos, porcentajePunt
             branch.commit()
             for idArticulo in idArticulosVendidos:
                 b_cursor.execute(
-                    "UPDATE Articulo SET IdEstadoArticulo = %d WHERE IdArticulo = %d",
+                    "UPDATE Articulo SET IdEstadoArticulo = %s WHERE IdArticulo = %s",
                     (estadoInventario, idArticulo))
             for idPromocion in idPromociones:
                 b_cursor.execute(
-                    "DELETE FROM PromocionFactura WHERE IdFactura = %d",
+                    "DELETE FROM PromocionFactura WHERE IdFactura = %s",
                     (idFactura,))
+            puntosObtenidos = -1 * precioTotal * (1 + porcentajeImpuestos)
     else:
-        puntos += precioTotal * porcentajePuntos
-        w_cursor.execute("UPDATE Cliente SET Puntos = %d WHERE IdCliente = %s", (puntos, idCliente))
-    # TODO actualizar precios en factura
+        puntosObtenidos = precioTotal * porcentajePuntos
+
+    puntos += puntosObtenidos
+
+    w_cursor.execute("UPDATE Cliente SET Puntos = %s WHERE IdCliente = %s", (puntos, idCliente))
+    b_cursor.execute(
+        "UPDATE Factura SET SubTotal = %s, Impuestos = %s, PuntosOtorgados = %s  WHERE IdFactura = %s",
+        (precioTotal, precioTotal * porcentajeImpuestos, puntosObtenidos, idFactura))
+
     # close connections
     warehouse.commit()
+    branch.commit()
     w_cursor.close()
     b_cursor.close()
     warehouse.close()
     branch.close()
 
 
-def devolucion(idArticulo, codigoFactura, idCliente, idEmpleado):
-    branch = mysql.connector.connect(host="localhost", user="root", database="sk8", passwd="salchipapa101")
+def devolucion(idArticulo, codigoFactura, idCliente, idEmpleado, sucursal):
+    branch = mysql.connector.connect(host="localhost", user="root", database=sucursal, passwd="salchipapa101")
     b_cursor = branch.cursor()
 
     b_cursor.callproc("GarantiaArticulo")
@@ -244,22 +260,34 @@ def devolucion(idArticulo, codigoFactura, idCliente, idEmpleado):
             garantia = garantia[0]
             if fecha < garantia:
                 b_cursor.execute(
-                    "SELECT Precio FROM Venta INNER JOIN Articulo A ON V.IdArticulo = A.IdArticulo WHERE A.IdArticulo = %d",
+                    "SELECT Precio FROM Venta INNER JOIN Articulo A ON V.IdArticulo = A.IdArticulo WHERE A.IdArticulo = %s",
                     (idArticulo,))
                 precio = result.fetchone()[0]
+
                 b_cursor.execute(
                     "INSERT INTO Factura (Codigo, Fecha, SubTotal, IdCliente, IdEmpleado, IdMetodoPago) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
-                    (codigoFactura, fecha, -1 * precio, idCliente, idEmpleado, 1))  # TODO metodo de pago
-                b_cursor.execute(
-                    "UPDATE Articulo SET IdEstadoArticulo = %d WHERE IdArticulo = %d",
-                    (2, idArticulo)) # TODO poner valor correcto de estado garantia
+                    (codigoFactura, fecha, -1 * precio, idCliente, idEmpleado, 3))  # devolucion en efectivo
+                branch.commit()
+                idFactura = b_cursor.lastrowid
 
+                b_cursor.execute(
+                    "INSERT INTO Venta (IdArticulo, IdFactura, Precio) VALUES (%s, %s, %s)",
+                    (idArticulo, idFactura, -1 * precio))
+
+                b_cursor.execute(
+                    "UPDATE Articulo SET IdEstadoArticulo = %s WHERE IdArticulo = %s",
+                    (4, idArticulo))
     branch.commit()
     b_cursor.close()
     branch.close()
 
 
-# newSale([1, 2, 3, 4, 5, 6], "VE233", fecha, 0.1, 0.3, 16, 10, "Efectivo")
+cierreCaja("Ska8-4-TEC Alajuela")
+
+#newSale([5, 10], "VE233", fecha, 0.1, 0.3, 1, 2, 1, "sk8")
+
+#newPromo(290, "super promo", fecha, "2028-01-19 03:14:07", 20)
 
 # insertCliente("207970282", "Marco", "Herrera", "Valverde", "12345678", "m.hsdfasdf", "07-10-1999", "lala", "lala",
-#               "San Pedro", "lala")
+#                "San Pedro", "lala")
+

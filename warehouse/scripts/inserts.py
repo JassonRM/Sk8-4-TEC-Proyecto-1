@@ -117,4 +117,4 @@ def insertPedido(proveedor, idempleado, codigoSKU, precioSKU, garantia, categori
 
 if __name__ == "__main__":
     # insertEmpleado("2-07820-951", "Jasson", "R", "M", "89719489", "jassonrm@icloud.com", '08-24-1998', "Tec", "Cartago", "Oriental", "Cartago", "Cartago", "Costa Rica", "Administrador", "01", 850000)
-    insertPedido("Hernandez LLC", 6, "240101", 10000, 30, "Calzado de hombre", "Ventana", 5000, 3)
+    insertPedido("Snyder Group", 6, "NewSKU11", 10000, 30, "Calzado de hombre", "Ventana", 5000, 15)

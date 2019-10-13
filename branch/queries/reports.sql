@@ -1,5 +1,5 @@
 DELIMITER //
-CREATE PROCEDURE EmpleadoMes(IN Mes INT, OUT Nombre VARCHAR(40))
+CREATE PROCEDURE EmpleadoMes(IN Mes INT, IN Año INT, OUT Nombre VARCHAR(40))
 BEGIN
     SELECT P.Nombre
     FROM Factura F
@@ -7,6 +7,7 @@ BEGIN
                         ON F.IdEmpleado = E.IdEmpleado
              INNER JOIN Persona P ON E.IdPersona = P.IdPersona
     WHERE MONTH(F.Fecha) = Mes
+      AND YEAR(F.Fecha) = Año
     GROUP BY F.IdEmpleado
     ORDER BY SUM(F.SubTotal) DESC
     LIMIT 1

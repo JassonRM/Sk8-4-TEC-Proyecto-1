@@ -15,32 +15,35 @@ def generateShipments():
     warehousedb = conn.cursor()
 
 
-    # # Connect to the store 1 database and open a cursor to perform database operations
-    # branch1 = mysql.connector.connect(
-    #     host="localhost",
-    #     port="27010",
-    #     user="yourusername",
-    #     passwd="yourpassword"
-    # )
-    # branch1db = branch1.cursor()
-    #
+    # Connect to the store 1 database and open a cursor to perform database operations
+    branch1 = mysql.connector.connect(
+        host="0.0.0.0",
+        port="3306",
+        user="root",
+        passwd="admin"
+    )
+    branch1db = branch1.cursor()
+
     # # Connect to the store 2 database and open a cursor to perform database operations
     # branch2 = mysql.connector.connect(
-    #     host="localhost",
-    #     port="27010",
-    #     user="yourusername",
-    #     passwd="yourpassword"
+    #     host="0.0.0.0",
+    #     port="3307",
+    #     user="root",
+    #     passwd="admin"
     # )
-    # branch1db = branch2.cursor()
+    # branch2db = branch2.cursor()
     #
     # # Connect to the store 3 database and open a cursor to perform database operations
     # branch3 = mysql.connector.connect(
-    #     host="localhost",
-    #     port="27010",
-    #     user="yourusername",
-    #     passwd="yourpassword"
+    #     host="0.0.0.0",
+    #     port="3308",
+    #     user="root",
+    #     passwd="admin"
     # )
-    # branch1db = branch3.cursor()
+    # branch3db = branch3.cursor()
+
+    branchList = [branch1]
+    cursorList = [branch1db]
 
     # Generate shipments with a truck
 
@@ -101,8 +104,24 @@ def generateShipments():
 
     # Fragmentation
 
-    
 
+    for i in range(0, len(branchList)):
+        cursorList[i].execute("USE sk8;")
+        # SKUs
+        warehousedb.execute("SELECT sku.* FROM sku INNER JOIN sucursalsku s on sku.idsku = s.idsku WHERE idsucursal = %s AND fecharegistro = %s", (i+1,fecha))
+        skus = warehousedb.fetchall()
+        cursorList[i].executemany("INSERT INTO SKU (IdSKU, Codigo, IdCategoria, IdEstado, PrecioActual, FechaRegistro, Garantia, DetalleUbicacion)  VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", skus)
+
+        # Articulos
+        warehousedb.execute("SELECT a.IdArticulo, a.IdSKU, a.Codigo, a.IdEstadoArticulo FROM articulo a INNER JOIN enviopaquete e on a.idarticulo = e.idarticulo INNER JOIN envio e2 on e.idenvio = e2.idenvio WHERE e2.idsucursal = %s AND e2.fecha = %s",
+            (i+1, fecha))
+        articulos = warehousedb.fetchall()
+        cursorList[i].executemany("INSERT INTO Articulo (IdArticulo, IdSKU, Codigo, IdEstadoArticulo) VALUES (%s, %s, %s, %s)",
+                                  articulos)
+
+        branchList[i].commit()
+        cursorList[i].close()
+        branchList[i].close()
 
 
     # Make the changes to the database persistent

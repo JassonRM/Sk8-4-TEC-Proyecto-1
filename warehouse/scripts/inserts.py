@@ -58,7 +58,7 @@ def insertEmpleado(identificacion, nombre, apellido1, apellido2, telefono, corre
     conn.close()
 
 
-def insertPedido(proveedor, idempleado, codigoSKU, precioSKU, garantia, categoria, detalleUbicacion, costo, cantidad):
+def insertPedido(proveedor, idempleado, codigoSKU, precioSKU, garantia, categoria, detalleUbicacion, costo, cantidad, sucursales):
 
     # Create random generator
     gen = pydbgen.pydb()
@@ -74,9 +74,8 @@ def insertPedido(proveedor, idempleado, codigoSKU, precioSKU, garantia, categori
     cur.execute("SELECT COUNT(*) FROM Pedido")
     CantidadPedidos = cur.fetchone()[0]
     idpedido = CantidadPedidos + 1
-    pedido = (idpedido, fecha, idproveedor, idempleado) # Si el empleado deberia buscarse por otro parametro
+    pedido = (idpedido, fecha, idproveedor, idempleado)
     cur.execute("INSERT INTO Pedido (IdPedido, Fecha, IdProveedor, IdEncargado) VALUES (%s, %s, %s, %s)", pedido)
-
 
     cur.execute("SELECT IdSKU FROM SKU where codigo = %s", (codigoSKU,))
     idsku = cur.fetchone()
@@ -95,6 +94,14 @@ def insertPedido(proveedor, idempleado, codigoSKU, precioSKU, garantia, categori
         cur.execute(
         "INSERT INTO SKU (IdSKU, Codigo, IdCategoria, IdEstado, PrecioActual, FechaRegistro, Garantia, DetalleUbicacion)  VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
         sku)
+
+        # Assign SKU to Sucursal
+        sucursalSKUs = []
+        for sucursal in sucursales:
+            sucursalSKUs.append((idsku, sucursal))
+        cur.executemany(
+            "INSERT INTO SucursalSKU (IdSKU, IdSucursal) VALUES  (%s, %s)",
+            sucursalSKUs)
 
     codigos = gen.gen_data_series(cantidad, data_type='ssn')
     cur.execute("SELECT COUNT(*) FROM Articulo")
@@ -116,5 +123,5 @@ def insertPedido(proveedor, idempleado, codigoSKU, precioSKU, garantia, categori
     conn.close()
 
 if __name__ == "__main__":
-    # insertEmpleado("2-07820-951", "Jasson", "R", "M", "89719489", "jassonrm@icloud.com", '08-24-1998', "Tec", "Cartago", "Oriental", "Cartago", "Cartago", "Costa Rica", "Administrador", "01", 850000)
-    insertPedido("Snyder Group", 6, "NewSKU11", 10000, 30, "Calzado de hombre", "Ventana", 5000, 15)
+    insertEmpleado("2-07820-951", "Jasson", "R", "M", "89719489", "jassonrm@icloud.com", '08-24-1998', "Tec", "Cartago", 407, "Administrador", "01", 850000)
+    # insertPedido("Benson PLC", 6, "NewSKU11", 10000, 30, "Calzado de hombre", "Ventana", 5000, 15, [1, 2])

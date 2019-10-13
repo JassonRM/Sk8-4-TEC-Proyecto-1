@@ -1,4 +1,3 @@
-USE sk8;
 CREATE TABLE IF NOT EXISTS Estado
 (
     IdEstado    INT AUTO_INCREMENT PRIMARY KEY,
@@ -80,29 +79,6 @@ CREATE TABLE IF NOT EXISTS Persona
 );
 
 
-CREATE TABLE IF NOT EXISTS Cliente
-(
-    IdCliente   INT AUTO_INCREMENT PRIMARY KEY,
-    IdPersona   INT NOT NULL,
-    Descripcion VARCHAR(100),
-    Puntos      INT NOT NULL,
-
-    FOREIGN KEY (IdPersona)
-        REFERENCES Persona (IdPersona)
-);
-
-
-CREATE TABLE IF NOT EXISTS Empleado
-(
-    IdEmpleado  INT AUTO_INCREMENT PRIMARY KEY,
-    IdPersona   INT NOT NULL,
-    Descripcion VARCHAR(100),
-
-    FOREIGN KEY (IdPersona)
-        REFERENCES Persona (IdPersona)
-);
-
-
 CREATE TABLE IF NOT EXISTS Puesto
 (
     IdPuesto    INT AUTO_INCREMENT PRIMARY KEY,
@@ -111,22 +87,23 @@ CREATE TABLE IF NOT EXISTS Puesto
 );
 
 
-CREATE TABLE IF NOT EXISTS EmpleadoPuesto
+CREATE TABLE IF NOT EXISTS Empleado
 (
-    IdEmpleado INT  NOT NULL,
+    IdEmpleado INT AUTO_INCREMENT PRIMARY KEY,
+    IdPersona  INT  NOT NULL,
     IdPuesto   INT  NOT NULL,
     Salario    INT  NOT NULL,
     Fecha      DATE NOT NULL,
     IdEstado   INT  NOT NULL,
 
-    FOREIGN KEY (IdEmpleado)
-        REFERENCES Empleado (IdEmpleado),
-
     FOREIGN KEY (IdPuesto)
         REFERENCES Puesto (IdPuesto),
 
     FOREIGN KEY (IdEstado)
-        REFERENCES Estado (IdEstado)
+        REFERENCES Estado (IdEstado),
+
+    FOREIGN KEY (IdPersona)
+        REFERENCES Persona (IdPersona)
 );
 
 
@@ -142,15 +119,12 @@ CREATE TABLE IF NOT EXISTS SKU
 (
     IdSKU            INT AUTO_INCREMENT PRIMARY KEY,
     Codigo           VARCHAR(40) NOT NULL,
-    Nombre           VARCHAR(40) NOT NULL,
-    Descripcion      VARCHAR(100),
     IdCategoria      INT         NOT NULL,
     IdEstado         INT         NOT NULL,
     PrecioActual     INT         NOT NULL,
     FechaRegistro    DATE        NOT NULL,
-    FechaCaducidad   DATE        NOT NULL,
+    Garantia         INT         NOT NULL,
     DetalleUbicacion VARCHAR(100),
-    Cantidad         INT         NOT NULL,
 
     FOREIGN KEY (IdCategoria)
         REFERENCES Categoria (IdCategoria),
@@ -160,20 +134,26 @@ CREATE TABLE IF NOT EXISTS SKU
 );
 
 
+CREATE TABLE IF NOT EXISTS EstadoArticulo
+(
+    IdEstadoArticulo INT AUTO_INCREMENT PRIMARY KEY,
+    Nombre           VARCHAR(40)
+);
+
 CREATE TABLE IF NOT EXISTS Articulo
 (
-    IdArticulo INT AUTO_INCREMENT PRIMARY KEY,
-    IdSKU      INT         NOT NULL,
-    Codigo     VARCHAR(40) NOT NULL,
-    IdEstado   INT         NOT NULL,
+    IdArticulo       INT AUTO_INCREMENT PRIMARY KEY,
+    IdSKU            INT         NOT NULL,
+    Codigo           VARCHAR(40) NOT NULL,
+    IdEstadoArticulo INT         NOT NULL,
 
     FOREIGN KEY (IdSKU)
         REFERENCES SKU (IdSKU),
 
-    FOREIGN KEY (IdEstado)
-        REFERENCES Estado (IdEstado)
-);
+    FOREIGN KEY (IdEstadoArticulo)
+        REFERENCES EstadoArticulo (IdEstadoArticulo)
 
+);
 
 
 CREATE TABLE IF NOT EXISTS MetodoPago
@@ -205,13 +185,9 @@ CREATE TABLE IF NOT EXISTS Factura
     SubTotal        INT         NOT NULL,
     Impuestos       INT         NOT NULL,
     PuntosOtorgados INT         NOT NULL,
-    Garantia        INT         NOT NULL,
     IdCliente       INT         NOT NULL,
     IdEmpleado      INT         NOT NULL,
     IdMetodoPago    INT         NOT NULL,
-
-    FOREIGN KEY (IdCliente)
-        REFERENCES Cliente (IdCliente),
 
     FOREIGN KEY (IdEmpleado)
         REFERENCES Empleado (IdEmpleado),
@@ -236,7 +212,6 @@ CREATE TABLE IF NOT EXISTS Venta
 (
     IdArticulo INT NOT NULL,
     IdFactura  INT NOT NULL,
-    Cantidad   INT NOT NULL,
     Precio     INT NOT NULL,
 
     FOREIGN KEY (IdArticulo)

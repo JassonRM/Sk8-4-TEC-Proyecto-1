@@ -126,9 +126,6 @@ CREATE TABLE IF NOT EXISTS Empleado
     Fecha      DATE NOT NULL,
     IdEstado   INT  NOT NULL,
 
-    FOREIGN KEY (IdEmpleado)
-        REFERENCES Empleado (IdEmpleado),
-
     FOREIGN KEY (IdPuesto)
         REFERENCES Puesto (IdPuesto),
 
@@ -330,7 +327,6 @@ CREATE TABLE IF NOT EXISTS Factura
     SubTotal        INT         NOT NULL,
     Impuestos       INT         NOT NULL,
     PuntosOtorgados INT         NOT NULL,
-    Garantia        INT         NOT NULL,
     IdSucursal      INT         NOT NULL,
     IdCliente       INT         NOT NULL,
     IdEmpleado      INT         NOT NULL,
@@ -365,7 +361,6 @@ CREATE TABLE IF NOT EXISTS Venta
 (
     IdArticulo INT NOT NULL,
     IdFactura  INT NOT NULL,
-    Cantidad   INT NOT NULL,
     Precio     INT NOT NULL,
 
     FOREIGN KEY (IdArticulo)

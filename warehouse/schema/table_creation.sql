@@ -270,9 +270,9 @@ CREATE TABLE IF NOT EXISTS Camion
 CREATE TABLE IF NOT EXISTS Envio
 (
     IdEnvio     SERIAL PRIMARY KEY,
-    IdCamion    INT       NOT NULL,
-    IdEncargado INT       NOT NULL,
-    IdSucursal  INT       NOT NULL,
+    IdCamion    INT  NOT NULL,
+    IdEncargado INT  NOT NULL,
+    IdSucursal  INT  NOT NULL,
     Fecha       DATE NOT NULL,
 
     FOREIGN KEY (IdCamion)
@@ -311,7 +311,7 @@ CREATE TABLE IF NOT EXISTS Promocion
     IdPromocion         SERIAL PRIMARY KEY,
     IdPromocionSucursal INT          NOT NULL,
     IdSucursal          INT          NOT NULL,
-    IdDKU               INT          NOT NULL,
+    IdSKU               INT          NOT NULL,
     Descripcion         VARCHAR(100) NOT NULL,
     Inicio              TIMESTAMP    NOT NULL,
     Fin                 TIMESTAMP    NOT NULL,
@@ -320,7 +320,7 @@ CREATE TABLE IF NOT EXISTS Promocion
     FOREIGN KEY (IdSucursal)
         REFERENCES Sucursal (IdSucursal),
 
-    FOREIGN KEY (IdDKU)
+    FOREIGN KEY (IdSKU)
         REFERENCES SKU (IdSKU)
 );
 

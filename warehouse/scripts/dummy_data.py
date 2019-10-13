@@ -4,11 +4,11 @@ from pydbgen import pydbgen
 import requests
 import json
 
-CantidadCamiones = 10
+CantidadCamiones = 20
 CantidadEmpleados = 15
 CantidadProveedores = 10
 CantidadPedidos = 30
-CantidadSKUs = 1000
+CantidadSKUs = 500
 CantidadArticulos = 15000
 
 
@@ -157,12 +157,13 @@ cur.executemany("INSERT INTO SKU (IdSKU, Codigo, IdCategoria, IdEstado, PrecioAc
 sucursalSKUs = []
 for sku in range(1, CantidadSKUs):
     storeList = []
-    for i in range(1, CantidadSucursales):
-        store = randint(1, CantidadSucursales - 1)
+    for i in range(1, CantidadSucursales + 1):
+        store = randint(1, CantidadSucursales)
         if store not in storeList:
+            storeList.append(store)
             sucursalSKUs.append((sku, store))
-        if random() > 0.5:
-            continue
+        if random() > 0.35:
+            break
 
 
 

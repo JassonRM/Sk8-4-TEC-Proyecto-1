@@ -270,16 +270,12 @@ CREATE TABLE IF NOT EXISTS Envio
 (
     IdEnvio     SERIAL PRIMARY KEY,
     IdCamion    INT       NOT NULL,
-    IdChofer    INT       NOT NULL,
     IdEncargado INT       NOT NULL,
     IdSucursal  INT       NOT NULL,
-    Fecha       TIMESTAMP NOT NULL,
+    Fecha       DATE NOT NULL,
 
     FOREIGN KEY (IdCamion)
         REFERENCES Camion (IdCamion),
-
-    FOREIGN KEY (IdChofer)
-        REFERENCES Empleado (IdEmpleado),
 
     FOREIGN KEY (IdEncargado)
         REFERENCES Empleado (IdEmpleado),

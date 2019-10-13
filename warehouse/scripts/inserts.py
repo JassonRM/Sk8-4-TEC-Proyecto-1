@@ -1,17 +1,10 @@
 import psycopg2
-from random import *
 from pydbgen import pydbgen
-import requests
-import json
 import datetime
 
 fecha = datetime.datetime.now().strftime("%Y-%m-%d")
 
 def insertEmpleado(identificacion, nombre, apellido1, apellido2, telefono, correo, fechaNacimiento, direccion1, direccion2, iddistrito, puesto, codSucursal, salario):
-
-
-    # Create random generator
-    gen = pydbgen.pydb()
 
     # Connect to an existing database and open a cursor to perform database operations
     conn = psycopg2.connect(dbname="postgres", user="postgres", password="admin")

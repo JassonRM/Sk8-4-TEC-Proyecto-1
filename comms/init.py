@@ -24,26 +24,26 @@ def initBranches():
     )
     branch1db = branch1.cursor()
 
-    # # Connect to the store 2 database and open a cursor to perform database operations
-    # branch2 = mysql.connector.connect(
-    #     host="0.0.0.0",
-    #     port="3307",
-    #     user="root",
-    #     passwd="admin"
-    # )
-    # branch2db = branch2.cursor()
-    #
-    # # Connect to the store 3 database and open a cursor to perform database operations
-    # branch3 = mysql.connector.connect(
-    #     host="0.0.0.0",
-    #     port="3308",
-    #     user="root",
-    #     passwd="admin"
-    # )
-    # branch3db = branch3.cursor()
+    # Connect to the store 2 database and open a cursor to perform database operations
+    branch2 = mysql.connector.connect(
+        host="0.0.0.0",
+        port="3307",
+        user="root",
+        passwd="admin"
+    )
+    branch2db = branch2.cursor()
 
-    branchList = [branch1]
-    cursorList = [branch1db]
+    # Connect to the store 3 database and open a cursor to perform database operations
+    branch3 = mysql.connector.connect(
+        host="0.0.0.0",
+        port="3308",
+        user="root",
+        passwd="admin"
+    )
+    branch3db = branch3.cursor()
+
+    branchList = [branch1]#, branch2, branch3]
+    cursorList = [branch1db]#, branch2db, branch3db]
 
 
     # Insert Pais, Provincia, Canton, Distrito
@@ -84,6 +84,7 @@ def initBranches():
     metodos = warehousedb.fetchall()
 
     for i in range(0, len(branchList)):
+
         cursorList[i].execute("USE sk8;")
         cursorList[i].executemany("INSERT INTO Pais (IdPais, Nombre) VALUES (%s, %s)",
                                   paises)
@@ -103,6 +104,32 @@ def initBranches():
             puestos)
         cursorList[i].executemany("INSERT INTO MetodoPago (IdMetodoPago, Metodo, Descripcion) VALUES (%s, %s, %s)",
             metodos)
+
+        # Direccion
+        warehousedb.execute("SELECT D.* FROM Direccion D INNER JOIN Persona P on D.iddireccion = P.iddireccion INNER JOIN Empleado E on P.idpersona = E.idpersona WHERE E.idsucursal = %s", (i+1,))
+        direcciones = warehousedb.fetchall()
+
+        cursorList[i].executemany(
+            "INSERT INTO Direccion (IdDireccion, IdDistrito, Detalle1, Detalle2) VALUES (%s, %s, %s, %s)",
+            direcciones)
+
+        # Persona
+        warehousedb.execute("SELECT P.* FROM Persona P INNER JOIN Empleado E on P.idpersona = E.idpersona WHERE E.idsucursal = %s", (i+1,))
+        personas = warehousedb.fetchall()
+
+        cursorList[i].executemany(
+            "INSERT INTO Persona (IdPersona, Identificacion, Nombre, Apellido1, Apellido2, Telefono, Correo, FechaNacimiento, FechaRegistro, IdEstado, IdDireccion) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            personas)
+
+        # Empleado
+        warehousedb.execute(
+            "SELECT IdEmpleado, IdPersona, IdPuesto, Salario, Fecha, IdEstado FROM Empleado WHERE IdSucursal = %s",
+            (i+1,))
+        empleados = warehousedb.fetchall()
+
+        cursorList[i].executemany(
+            "INSERT INTO Empleado (IdEmpleado, IdPersona, IdPuesto, Salario, Fecha, IdEstado) VALUES (%s, %s, %s, %s, %s, %s)",
+            empleados)
 
         # SKUs
         warehousedb.execute("SELECT sku.* FROM sku INNER JOIN sucursalsku s on sku.idsku = s.idsku WHERE idsucursal = %s", (i+1,))

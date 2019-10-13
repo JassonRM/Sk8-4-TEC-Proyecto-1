@@ -19,6 +19,10 @@ gen = pydbgen.pydb()
 conn = psycopg2.connect(dbname="postgres", user="postgres", password="admin")
 cur = conn.cursor()
 
+# Create tables
+sql_file = open('../schema/table_creation.sql','r', encoding='utf-8')
+cur.execute(sql_file.read())
+
 # Execute the inserts on each table
 
 # Add seeds

@@ -81,13 +81,17 @@ CREATE TABLE IF NOT EXISTS Persona
 
 CREATE TABLE IF NOT EXISTS Cliente
 (
-    IdCliente   SERIAL PRIMARY KEY,
-    IdPersona   INT NOT NULL,
-    Descripcion VARCHAR(100),
-    Puntos      INT NOT NULL,
+    IdCliente     SERIAL PRIMARY KEY,
+    IdPersona     INT  NOT NULL,
+    Descripcion   VARCHAR(100),
+    Puntos        INT  NOT NULL,
+    FechaRegistro DATE NOT NULL,
+    IdEstado      INT  NOT NULL,
 
     FOREIGN KEY (IdPersona)
-        REFERENCES Persona (IdPersona)
+        REFERENCES Persona (IdPersona),
+    FOREIGN KEY (IdEstado)
+        REFERENCES Estado (IdEstado)
 );
 
 
@@ -125,9 +129,6 @@ CREATE TABLE IF NOT EXISTS Empleado
     Salario    INT  NOT NULL,
     Fecha      DATE NOT NULL,
     IdEstado   INT  NOT NULL,
-
-    FOREIGN KEY (IdEmpleado)
-        REFERENCES Empleado (IdEmpleado),
 
     FOREIGN KEY (IdPuesto)
         REFERENCES Puesto (IdPuesto),
@@ -269,9 +270,9 @@ CREATE TABLE IF NOT EXISTS Camion
 CREATE TABLE IF NOT EXISTS Envio
 (
     IdEnvio     SERIAL PRIMARY KEY,
-    IdCamion    INT       NOT NULL,
-    IdEncargado INT       NOT NULL,
-    IdSucursal  INT       NOT NULL,
+    IdCamion    INT  NOT NULL,
+    IdEncargado INT  NOT NULL,
+    IdSucursal  INT  NOT NULL,
     Fecha       DATE NOT NULL,
 
     FOREIGN KEY (IdCamion)
@@ -307,30 +308,36 @@ CREATE TABLE IF NOT EXISTS MetodoPago
 
 CREATE TABLE IF NOT EXISTS Promocion
 (
-    IdPromocion SERIAL PRIMARY KEY,
-    IdArticulo  INT       NOT NULL,
-    Inicio      TIMESTAMP NOT NULL,
-    Fin         TIMESTAMP NOT NULL,
-    Descuento   INT       NOT NULL,
+    IdPromocion         SERIAL PRIMARY KEY,
+    IdPromocionSucursal INT          NOT NULL,
+    IdSucursal          INT          NOT NULL,
+    IdSKU               INT          NOT NULL,
+    Descripcion         VARCHAR(100) NOT NULL,
+    Inicio              TIMESTAMP    NOT NULL,
+    Fin                 TIMESTAMP    NOT NULL,
+    Descuento           INT          NOT NULL,
 
-    FOREIGN KEY (IdArticulo)
-        REFERENCES Articulo (IdArticulo)
+    FOREIGN KEY (IdSucursal)
+        REFERENCES Sucursal (IdSucursal),
+
+    FOREIGN KEY (IdSKU)
+        REFERENCES SKU (IdSKU)
 );
 
 
 CREATE TABLE IF NOT EXISTS Factura
 (
-    IdFactura       SERIAL PRIMARY KEY,
-    Codigo          VARCHAR(40) NOT NULL,
-    Fecha           DATE        NOT NULL,
-    SubTotal        INT         NOT NULL,
-    Impuestos       INT         NOT NULL,
-    PuntosOtorgados INT         NOT NULL,
-    Garantia        INT         NOT NULL,
-    IdSucursal      INT         NOT NULL,
-    IdCliente       INT         NOT NULL,
-    IdEmpleado      INT         NOT NULL,
-    IdMetodoPago    INT         NOT NULL,
+    IdFactura         SERIAL PRIMARY KEY,
+    IdFacturaSucursal INT         NOT NULL,
+    Codigo            VARCHAR(40) NOT NULL,
+    Fecha             DATE        NOT NULL,
+    SubTotal          INT         NOT NULL,
+    Impuestos         INT         NOT NULL,
+    PuntosOtorgados   INT         NOT NULL,
+    IdSucursal        INT         NOT NULL,
+    IdCliente         INT         NOT NULL,
+    IdEmpleado        INT         NOT NULL,
+    IdMetodoPago      INT         NOT NULL,
 
     FOREIGN KEY (IdSucursal)
         REFERENCES Sucursal (IdSucursal),
@@ -361,7 +368,6 @@ CREATE TABLE IF NOT EXISTS Venta
 (
     IdArticulo INT NOT NULL,
     IdFactura  INT NOT NULL,
-    Cantidad   INT NOT NULL,
     Precio     INT NOT NULL,
 
     FOREIGN KEY (IdArticulo)

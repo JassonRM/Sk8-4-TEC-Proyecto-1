@@ -63,15 +63,14 @@ DELIMITER ;
 
 
 DELIMITER //
-CREATE PROCEDURE GarantiaArticulo(IN IdArticulo VARCHAR(40), OUT Garantia DATE)
+CREATE PROCEDURE GarantiaArticulo(IN IdArticulo INT)
 BEGIN
     SELECT DATE_ADD(F.Fecha, INTERVAL S.Garantia MONTH)
     FROM Factura F
              INNER JOIN Venta V ON F.IdFactura = V.IdFactura
              INNER JOIN Articulo A ON V.IdArticulo = A.IdArticulo
              INNER JOIN SKU S ON A.IdSKU = S.IdSKU
-    WHERE A.IdArticulo = IdArticulo
-    INTO Garantia;
+    WHERE A.IdArticulo = IdArticulo;
 END
 //
 DELIMITER ;

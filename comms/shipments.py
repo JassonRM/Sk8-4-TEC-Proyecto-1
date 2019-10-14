@@ -26,26 +26,26 @@ def generateShipments():
     )
     branch1db = branch1.cursor()
 
-    # # Connect to the store 2 database and open a cursor to perform database operations
-    # branch2 = mysql.connector.connect(
-    #     host="0.0.0.0",
-    #     port="3307",
-    #     user="root",
-    #     passwd="admin"
-    # )
-    # branch2db = branch2.cursor()
-    #
-    # # Connect to the store 3 database and open a cursor to perform database operations
-    # branch3 = mysql.connector.connect(
-    #     host="0.0.0.0",
-    #     port="3308",
-    #     user="root",
-    #     passwd="admin"
-    # )
-    # branch3db = branch3.cursor()
+    # Connect to the store 2 database and open a cursor to perform database operations
+    branch2 = mysql.connector.connect(
+        host="0.0.0.0",
+        port="3307",
+        user="root",
+        passwd="admin"
+    )
+    branch2db = branch2.cursor()
 
-    branchList = [branch1]#, branch2, branch3]
-    cursorList = [branch1db]#, branch2db, branch3db]
+    # Connect to the store 3 database and open a cursor to perform database operations
+    branch3 = mysql.connector.connect(
+        host="0.0.0.0",
+        port="3308",
+        user="root",
+        passwd="admin"
+    )
+    branch3db = branch3.cursor()
+
+    branchList = [branch1, branch2, branch3]
+    cursorList = [branch1db, branch2db, branch3db]
     # Generate shipments with a truck
 
     warehousedb.execute("SELECT COUNT(*) FROM Sucursal")

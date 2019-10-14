@@ -160,3 +160,5 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+warehouse/scripts/__pycache__/

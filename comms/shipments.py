@@ -3,7 +3,7 @@ from pydbgen import pydbgen
 import datetime
 import mysql.connector
 from random import *
-from inserts import insertPedido
+from warehouse.scripts.inserts import insertPedido
 
 fecha = datetime.datetime.now().strftime("%Y-%m-%d")
 
@@ -13,7 +13,7 @@ def generateShipments():
     gen = pydbgen.pydb()
 
     # Connect to the warehouse database and open a cursor to perform database operations
-    conn = psycopg2.connect(dbname="sk8_warehouse", user="postgres", password="salchipapa101")
+    conn = psycopg2.connect(dbname="postgres", user="postgres", password="admin")
     warehousedb = conn.cursor()
 
     # Connect to the store 1 database and open a cursor to perform database operations
@@ -22,7 +22,7 @@ def generateShipments():
         port="3306",
         user="root",
         database="Ska8-4-TEC-Alajuela",
-        passwd="salchipapa101"
+        passwd="admin"
     )
     branch1db = branch1.cursor()
 
@@ -31,6 +31,7 @@ def generateShipments():
         host="0.0.0.0",
         port="3307",
         user="root",
+        database="Ska8-4-TEC-Cartago",
         passwd="admin"
     )
     branch2db = branch2.cursor()
@@ -40,6 +41,7 @@ def generateShipments():
         host="0.0.0.0",
         port="3308",
         user="root",
+        database="Ska8-4-TEC-San-Jose",
         passwd="admin"
     )
     branch3db = branch3.cursor()
@@ -136,39 +138,41 @@ def generateShipments():
                 cursorList[i].execute(
                     "INSERT INTO Articulo (IdArticulo, IdSKU, Codigo, IdEstadoArticulo) VALUES (%s, %s, %s, %s)",
                     articulo)
-                print("SEND")
             except:
-                print("already shipped")
+                print("Already shipped")
 
-        # Direccion
-        warehousedb.execute(
-            "SELECT D.* FROM Direccion D INNER JOIN Persona P on D.iddireccion = P.iddireccion INNER JOIN Empleado E on P.idpersona = E.idpersona WHERE E.idsucursal = %s AND E.Fecha = %s",
-            (i + 1, fecha))
-        direcciones = warehousedb.fetchall()
+        try:
+            # Direccion
+            warehousedb.execute(
+                "SELECT D.* FROM Direccion D INNER JOIN Persona P on D.iddireccion = P.iddireccion INNER JOIN Empleado E on P.idpersona = E.idpersona WHERE E.idsucursal = %s AND E.Fecha = %s",
+                (i + 1, fecha))
+            direcciones = warehousedb.fetchall()
 
-        cursorList[i].executemany(
-            "INSERT INTO Direccion (IdDireccion, IdDistrito, Detalle1, Detalle2) VALUES (%s, %s, %s, %s)",
-            direcciones)
+            cursorList[i].executemany(
+                "INSERT INTO Direccion (IdDireccion, IdDistrito, Detalle1, Detalle2) VALUES (%s, %s, %s, %s)",
+                direcciones)
 
-        # Persona
-        warehousedb.execute(
-            "SELECT P.* FROM Persona P INNER JOIN Empleado E on P.idpersona = E.idpersona WHERE E.idsucursal = %s AND E.Fecha = %s",
-            (i + 1, fecha))
-        personas = warehousedb.fetchall()
+            # Persona
+            warehousedb.execute(
+                "SELECT P.* FROM Persona P INNER JOIN Empleado E on P.idpersona = E.idpersona WHERE E.idsucursal = %s AND E.Fecha = %s",
+                (i + 1, fecha))
+            personas = warehousedb.fetchall()
 
-        cursorList[i].executemany(
-            "INSERT INTO Persona (IdPersona, Identificacion, Nombre, Apellido1, Apellido2, Telefono, Correo, FechaNacimiento, FechaRegistro, IdEstado, IdDireccion) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-            personas)
+            cursorList[i].executemany(
+                "INSERT INTO Persona (IdPersona, Identificacion, Nombre, Apellido1, Apellido2, Telefono, Correo, FechaNacimiento, FechaRegistro, IdEstado, IdDireccion) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                personas)
 
-        # Empleado
-        warehousedb.execute(
-            "SELECT IdEmpleado, IdPersona, IdPuesto, Salario, Fecha, IdEstado FROM Empleado WHERE IdSucursal = %s AND Fecha = %s",
-            (i + 1, fecha))
-        empleados = warehousedb.fetchall()
+            # Empleado
+            warehousedb.execute(
+                "SELECT IdEmpleado, IdPersona, IdPuesto, Salario, Fecha, IdEstado FROM Empleado WHERE IdSucursal = %s AND Fecha = %s",
+                (i + 1, fecha))
+            empleados = warehousedb.fetchall()
 
-        cursorList[i].executemany(
-            "INSERT INTO Empleado (IdEmpleado, IdPersona, IdPuesto, Salario, Fecha, IdEstado) VALUES (%s, %s, %s, %s, %s, %s)",
-            empleados)
+            cursorList[i].executemany(
+                "INSERT INTO Empleado (IdEmpleado, IdPersona, IdPuesto, Salario, Fecha, IdEstado) VALUES (%s, %s, %s, %s, %s, %s)",
+                empleados)
+        except:
+            print("Error: Empleado duplicado")
 
         branchList[i].commit()
         cursorList[i].close()

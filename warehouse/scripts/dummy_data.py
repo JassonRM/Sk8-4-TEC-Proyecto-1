@@ -14,13 +14,16 @@ CantidadArticulos = 15000
 
 # Create random generator
 gen = pydbgen.pydb()
-
 # Connect to an existing database and open a cursor to perform database operations
 conn = psycopg2.connect(dbname="postgres", user="postgres", password="admin")
 cur = conn.cursor()
 
 # Create tables
 sql_file = open('../schema/table_creation.sql','r', encoding='utf-8')
+cur.execute(sql_file.read())
+
+# Create procedures
+sql_file = open('../schema/procedures.sql','r', encoding='utf-8')
 cur.execute(sql_file.read())
 
 # Execute the inserts on each table

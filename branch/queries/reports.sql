@@ -17,46 +17,45 @@ DELIMITER ;
 
 
 DELIMITER //
-CREATE PROCEDURE CierreCajaFacturas()
+CREATE PROCEDURE CierreCajaFacturas(IN date VARCHAR(20))
 BEGIN
     SELECT F.*
     FROM Factura F
-    WHERE F.Fecha = CURRENT_DATE();
+    WHERE F.Fecha = date;
 END
 //
 DELIMITER ;
 
 
 DELIMITER //
-CREATE PROCEDURE CierreCajaVentas()
+CREATE PROCEDURE CierreCajaVentas(IN date VARCHAR(20))
 BEGIN
     SELECT V.*
     FROM Venta V
              INNER JOIN Factura F ON V.IdFactura = F.IdFactura
-    WHERE F.Fecha = CURRENT_DATE();
+    WHERE F.Fecha = date;
 END
 //
 DELIMITER ;
 
 
 DELIMITER //
-CREATE PROCEDURE CierreCajaPromociones()
+CREATE PROCEDURE CierreCajaPromociones(IN date DATETIME)
 BEGIN
     SELECT P.*
     FROM Promocion P
-    WHERE DATE(P.Inicio) = CURRENT_DATE(); -- TODO Revisar como mejorar desempeño
+    WHERE DATE(P.Inicio) = date; -- TODO Revisar como mejorar desempeño
 END
 //
 DELIMITER ;
 
-
 DELIMITER //
-CREATE PROCEDURE CierreCajaPromocionFactura()
+CREATE PROCEDURE CierreCajaPromocionFactura(IN date VARCHAR(20))
 BEGIN
     SELECT PF.*
     FROM PromocionFactura PF
              INNER JOIN Factura F ON PF.IdFactura = F.IdFactura
-    WHERE F.Fecha = CURRENT_DATE();
+    WHERE F.Fecha = date;
 END
 //
 DELIMITER ;
@@ -110,7 +109,7 @@ CREATE PROCEDURE ReporteProductos()
 BEGIN
     SELECT EA.Nombre, COUNT(*) AS Cantidad
     FROM Articulo A
-             INNER JOIN Estadoarticulo EA ON A.IdEstadoArticulo = EA.Nombre
+             INNER JOIN EstadoArticulo EA ON A.IdEstadoArticulo = EA.IdEstadoArticulo
     GROUP BY EA.IdEstadoArticulo
     ORDER BY Cantidad DESC;
 END
@@ -128,3 +127,6 @@ BEGIN
 END
 //
 DELIMITER ;
+
+
+CALL GarantiaArticulo(5)

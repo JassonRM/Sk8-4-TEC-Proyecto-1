@@ -14,12 +14,12 @@ def initBranches():
     conn = psycopg2.connect(dbname="postgres", user="postgres", password="admin")
     warehousedb = conn.cursor()
 
-
     # Connect to the store 1 database and open a cursor to perform database operations
     branch1 = mysql.connector.connect(
-        host="0.0.0.0",
+        host="localhost",
         port="3306",
         user="root",
+        database="Ska8-4-TEC-Alajuela",
         passwd="admin"
     )
     branch1db = branch1.cursor()
@@ -29,6 +29,7 @@ def initBranches():
         host="0.0.0.0",
         port="3307",
         user="root",
+        database="Ska8-4-TEC-Cartago",
         passwd="admin"
     )
     branch2db = branch2.cursor()
@@ -38,6 +39,7 @@ def initBranches():
         host="0.0.0.0",
         port="3308",
         user="root",
+        database="Ska8-4-TEC-San-Jose",
         passwd="admin"
     )
     branch3db = branch3.cursor()
@@ -84,8 +86,6 @@ def initBranches():
     metodos = warehousedb.fetchall()
 
     for i in range(0, len(branchList)):
-
-        cursorList[i].execute("USE sk8;")
         cursorList[i].executemany("INSERT INTO Pais (IdPais, Nombre) VALUES (%s, %s)",
                                   paises)
         cursorList[i].executemany("INSERT INTO Provincia (IdProvincia, Nombre, IdPais) VALUES (%s, %s, %s)",

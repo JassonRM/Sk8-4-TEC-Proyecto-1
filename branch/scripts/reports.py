@@ -2,7 +2,7 @@ import mysql.connector
 import psycopg2
 import datetime
 
-WAREHOUSE_DB = ""
+WAREHOUSE_DB = "postgres"
 WAREHOUSE_DB_USER = "postgres"
 WAREHOUSE_DB_PASSWD = "admin"
 
@@ -25,7 +25,7 @@ def updateWarehouseDB(db, user, password):
     WAREHOUSE_DB_PASSWD = password
 
 
-def updateBranchDB(db, host, user, password, port):
+def updateBranchDB(db, host, port, user, password):
     global BRANCH_DB
     global BRANCH_DB_HOST
     global BRANCH_DB_PORT
@@ -60,16 +60,17 @@ def cierreCaja():
     idSucursal = w_cursor.fetchone()[0]
 
     # move facturas from branch to warehouse
-    b_cursor.callproc("CierreCajaFacturas")
+    b_cursor.callproc("CierreCajaFacturas", (fecha,))
     for resultado in b_cursor.stored_results():
         for factura in resultado.fetchall():
+            print("Factura")
             w_cursor.execute(
                 "INSERT INTO Factura (IdFacturaSucursal, Codigo, Fecha, SubTotal, Impuestos, PuntosOtorgados, IdCliente, IdEmpleado, IdMetodoPago, IdSucursal) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
                 factura + (idSucursal,))
     warehouse.commit()
 
     # move ventas from branch to warehouse
-    b_cursor.callproc("CierreCajaVentas")
+    b_cursor.callproc("CierreCajaVentas", (fecha,))
     for resultado in b_cursor.stored_results():
         for venta in resultado.fetchall():
             w_cursor.execute(
@@ -90,15 +91,18 @@ def cierreCaja():
                     (3, venta[0]))
 
     # move Promociones from branch to warehouse
-    b_cursor.callproc("CierreCajaPromociones")
+    b_cursor.callproc("CierreCajaPromociones", (fecha,))
     for resultado in b_cursor.stored_results():
         for promocion in resultado.fetchall():
+            print("Promocion")
             w_cursor.execute(
                 "INSERT INTO Promocion (IdPromocionSucursal, IdSKU, Descripcion, Inicio, Fin, Descuento, IdSucursal) VALUES (%s, %s, %s, %s, %s, %s, %s)",
                 promocion + (idSucursal,))
 
+    warehouse.commit()
+
     # move PromocionFactura from branch to warehouse
-    b_cursor.callproc("CierreCajaPromocionFactura")
+    b_cursor.callproc("CierreCajaPromocionFactura", (fecha,))
     for resultado in b_cursor.stored_results():
         for promocionFactura in resultado.fetchall():
             w_cursor.execute(
@@ -126,6 +130,11 @@ def insertCliente(identificacion, nombre, apellido1, apellido2, telefono, correo
     warehouse = psycopg2.connect(dbname=WAREHOUSE_DB, user=WAREHOUSE_DB_USER, password=WAREHOUSE_DB_PASSWD)
     w_cursor = warehouse.cursor()
 
+    w_cursor.execute("SELECT COUNT(*) FROM Persona")
+    CantidadPersonas = w_cursor.fetchone()[0]
+    w_cursor.execute("SELECT COUNT(*) FROM Direccion")
+    CantidadDirecciones = w_cursor.fetchone()[0]
+
     # Check if Persona exists
     w_cursor.execute("SELECT IdPersona FROM persona where identificacion = %s", (identificacion,))
     idPersona = w_cursor.fetchone()
@@ -134,20 +143,19 @@ def insertCliente(identificacion, nombre, apellido1, apellido2, telefono, correo
     else:
         # Insert Persona and Direccion
         w_cursor.execute(
-            "INSERT INTO Direccion (IdDistrito, Detalle1, Detalle2) VALUES (%s, %s, %s)",
-            (iddistrito, direccion1, direccion2))
+            "INSERT INTO Direccion (IdDireccion, IdDistrito, Detalle1, Detalle2) VALUES (%s, %s, %s, %s)",
+            (CantidadDirecciones + 1, iddistrito, direccion1, direccion2))
         warehouse.commit()
-        idDireccion = w_cursor.lastrowid
-        persona = (
+        idDireccion = CantidadDirecciones + 1
+        persona = (CantidadPersonas + 1,
             identificacion, nombre, apellido1, apellido2, telefono, correo, fechaNacimiento, fecha, 1, idDireccion)
         w_cursor.execute(
-            "INSERT INTO Persona (Identificacion, Nombre, Apellido1, Apellido2, Telefono, Correo, FechaNacimiento, FechaRegistro, IdEstado, IdDireccion) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            "INSERT INTO Persona (IdPersona, Identificacion, Nombre, Apellido1, Apellido2, Telefono, Correo, FechaNacimiento, FechaRegistro, IdEstado, IdDireccion) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
             persona)
         warehouse.commit()
-        idPersona = w_cursor.lastrowid
+        idPersona = CantidadPersonas + 1
 
     # Insert Cliente
-    fecha = datetime.datetime.now().strftime("%Y-%m-%d")
     estado = 1
     cliente = (idPersona, descripcion, 0, fecha, estado)
     w_cursor.execute(
@@ -323,8 +331,8 @@ def devolucion(idArticulo, codigoFactura, idCliente, idEmpleado, fecha):
 
         # create Factura for return
         b_cursor.execute(
-            "INSERT INTO Factura (Codigo, Fecha, SubTotal, IdCliente, IdEmpleado, IdMetodoPago) VALUES (%s, %s, %s, %s, %s, %s)",
-            (codigoFactura, fecha, -1 * precio, idCliente, idEmpleado, 3))  # devolucion en efectivo
+            "INSERT INTO Factura (Codigo, Fecha, SubTotal, IdCliente, IdEmpleado, IdMetodoPago, Impuestos, PuntosOtorgados) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+            (codigoFactura, fecha, -1 * precio, idCliente, idEmpleado, 3, 0, 0))  # devolucion en efectivo
         branch.commit()
         idFactura = b_cursor.lastrowid
 
@@ -347,9 +355,24 @@ def devolucion(idArticulo, codigoFactura, idCliente, idEmpleado, fecha):
 
 
 if __name__ == "__main__":
-    updateBranchDB("Ska8-4-TEC-Alajuela", "0.0.0.0", "3306", "root", "admin")
+    updateBranchDB("Ska8-4-TEC-Alajuela", "0.0.0.0", 3306, "root", "admin")
     cierreCaja()
-    updateBranchDB("Ska8-4-TEC-Cartago", "0.0.0.0", "3307", "root", "admin")
+    updateBranchDB("Ska8-4-TEC-Cartago", "0.0.0.0", 3307, "root", "admin")
     cierreCaja()
-    updateBranchDB("Ska8-4-TEC-San-Jose", "0.0.0.0", "3308", "root", "admin")
+    updateBranchDB("Ska8-4-TEC-San-Jose", "0.0.0.0", 3308, "root", "admin")
     cierreCaja()
+
+    # Ejemplos
+
+    # insertCliente("469-68-0955", "Carlos", "R", "M", "379832", "cal@icloud.com", '01-24-1990', "Tec", "Cartago", 34, "Buen cliente")
+    # insertCliente("20390294", "Maria", "R", "M", "379832",
+    #               "cal@icloud.com", '01-24-1990', "Tec", "Cartago", 35,
+    #               "Buen cliente")
+    # insertVenta([9, 15], "AMB123", fecha, 0.13,
+    #             0.05,
+    #             1, 13, 1)
+    # insertPromocion(17, "Mitad de precio", "2018-11-28 00:00:00", "2020-11-28 00:00:00", 50)
+    # insertVenta([20], "AMB250", fecha, 0.13,
+    #             0.05,
+    #             1, 13, 1)
+    # devolucion(20, "DEV001", 2, 13, fecha)

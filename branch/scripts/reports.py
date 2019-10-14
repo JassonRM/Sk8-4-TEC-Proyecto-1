@@ -10,6 +10,9 @@ BRANCH_DB = ""
 BRANCH_DB_HOST = "localhost"
 BRANCH_DB_USER = "root"
 BRANCH_DB_PASSWD = "admin"
+BRANCH_DB_PORT = "3306"
+
+fecha = datetime.datetime.now().strftime("%Y-%m-%d")
 
 
 def updateWarehouseDB(db, user, password):
@@ -22,14 +25,16 @@ def updateWarehouseDB(db, user, password):
     WAREHOUSE_DB_PASSWD = password
 
 
-def updateBranchDB(db, host, user, password):
+def updateBranchDB(db, host, user, password, port):
     global BRANCH_DB
     global BRANCH_DB_HOST
+    global BRANCH_DB_PORT
     global BRANCH_DB_USER
     global BRANCH_DB_PASSWD
 
     BRANCH_DB = db
     BRANCH_DB_HOST = host
+    BRANCH_DB_PORT = port
     BRANCH_DB_USER = user
     BRANCH_DB_PASSWD = password
 
@@ -40,9 +45,11 @@ b_cursor: branch database cursor
 w_cursor: warehouse database cursor
 sucursal: name of the branch that is sending data
 """
+
+
 def cierreCaja():
     # Connect to an existing database and open a cursor to perform database operations
-    branch = mysql.connector.connect(host=BRANCH_DB_HOST, user=BRANCH_DB_USER, database=BRANCH_DB,
+    branch = mysql.connector.connect(host=BRANCH_DB_HOST, port=BRANCH_DB_PORT, user=BRANCH_DB_USER, database=BRANCH_DB,
                                      passwd=BRANCH_DB_PASSWD)
     warehouse = psycopg2.connect(dbname=WAREHOUSE_DB, user=WAREHOUSE_DB_USER, password=WAREHOUSE_DB_PASSWD)
     w_cursor = warehouse.cursor()
@@ -158,7 +165,7 @@ def insertCliente(identificacion, nombre, apellido1, apellido2, telefono, correo
 
 def insertPromocion(idSKU, descripcion, inicio, fin, descuento):
     # Connect to an existing database and open a cursor to perform database operations
-    branch = mysql.connector.connect(host=BRANCH_DB_HOST, user=BRANCH_DB_USER, database=BRANCH_DB,
+    branch = mysql.connector.connect(host=BRANCH_DB_HOST, port=BRANCH_DB_PORT, user=BRANCH_DB_USER, database=BRANCH_DB,
                                      passwd=BRANCH_DB_PASSWD)
     b_cursor = branch.cursor()
 
@@ -179,7 +186,7 @@ def insertPromocion(idSKU, descripcion, inicio, fin, descuento):
 def insertVenta(articulos, codigoFactura, fecha, porcentajeImpuestos, porcentajePuntos,
                 idCliente, idEmpleado, idMetodoPago):
     # Connect to an existing database and open a cursor to perform database operations
-    branch = mysql.connector.connect(host=BRANCH_DB_HOST, user=BRANCH_DB_USER, database=BRANCH_DB,
+    branch = mysql.connector.connect(host=BRANCH_DB_HOST, port=BRANCH_DB_PORT, user=BRANCH_DB_USER, database=BRANCH_DB,
                                      passwd=BRANCH_DB_PASSWD)
     warehouse = psycopg2.connect(dbname=WAREHOUSE_DB, user=WAREHOUSE_DB_USER, password=WAREHOUSE_DB_PASSWD)
     w_cursor = warehouse.cursor()
@@ -296,7 +303,7 @@ def insertVenta(articulos, codigoFactura, fecha, porcentajeImpuestos, porcentaje
 
 def devolucion(idArticulo, codigoFactura, idCliente, idEmpleado, fecha):
     # Connect to an existing database and open a cursor to perform database operations
-    branch = mysql.connector.connect(host=BRANCH_DB_HOST, user=BRANCH_DB_USER, database=BRANCH_DB,
+    branch = mysql.connector.connect(host=BRANCH_DB_HOST, port=BRANCH_DB_PORT, user=BRANCH_DB_USER, database=BRANCH_DB,
                                      passwd=BRANCH_DB_PASSWD)
     b_cursor = branch.cursor()
 
@@ -337,3 +344,12 @@ def devolucion(idArticulo, codigoFactura, idCliente, idEmpleado, fecha):
     # close connections
     b_cursor.close()
     branch.close()
+
+
+if __name__ == "__main__":
+    updateBranchDB("Ska8-4-TEC-Alajuela", "0.0.0.0", "3306", "root", "admin")
+    cierreCaja()
+    updateBranchDB("Ska8-4-TEC-Cartago", "0.0.0.0", "3307", "root", "admin")
+    cierreCaja()
+    updateBranchDB("Ska8-4-TEC-San-Jose", "0.0.0.0", "3308", "root", "admin")
+    cierreCaja()

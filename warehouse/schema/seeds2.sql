@@ -4,7 +4,7 @@ VALUES (122, 'Avenida 2', 'Frente al parque'),
        (236, 'Calle 3', 'Frente a la iglesia');
 
 INSERT INTO sucursal (codigo, nombre, descripcion, iddireccion, idestado)
-VALUES ('01', 'Ska8-4-TEC Alajuela', 'Tienda original', 1, 1),
-       ('02', 'Ska8-4-TEC Cartago', 'Tienda religiosa', 3, 1),
-       ('03', 'Ska8-4-TEC San José', 'Tienda super ventas', 2, 2);
+VALUES ('01', 'Ska8-4-TEC-Alajuela', 'Tienda original', 1, 1),
+       ('02', 'Ska8-4-TEC-Cartago', 'Tienda religiosa', 3, 1),
+       ('03', 'Ska8-4-TEC-San-Jose', 'Tienda super ventas', 2, 2);
 

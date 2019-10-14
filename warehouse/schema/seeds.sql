@@ -16,7 +16,7 @@ VALUES ('Bodega'),
 
 INSERT INTO categoria (nombre, descripcion)
 VALUES ('Camiseta de hombre', 'Camisetas de diferentes estilos para hombre'),
-       ('Camiseta de hombre', 'Camisetas de diferentes estilos para mujeres'),
+       ('Camiseta de mujer', 'Camisetas de diferentes estilos para mujeres'),
        ('Blusas', 'Blusas de diferentes estilos para mujeres'),
        ('Calzado de hombre', 'Zapatos para hombres para hacer skate'),
        ('Calzado de mujer', 'Zapatos para mujeres para hacer skate'),

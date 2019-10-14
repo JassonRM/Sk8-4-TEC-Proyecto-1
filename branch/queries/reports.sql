@@ -40,11 +40,11 @@ DELIMITER ;
 
 
 DELIMITER //
-CREATE PROCEDURE CierreCajaPromociones(IN date DATETIME)
+CREATE PROCEDURE CierreCajaPromociones()
 BEGIN
     SELECT P.*
     FROM Promocion P
-    WHERE DATE(P.Inicio) = date; -- TODO Revisar como mejorar desempeño
+    WHERE DATE(P.Inicio) = CURRENT_DATE(); -- TODO Revisar como mejorar desempeño
 END
 //
 DELIMITER ;

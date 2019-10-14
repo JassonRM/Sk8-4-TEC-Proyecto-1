@@ -91,7 +91,7 @@ def cierreCaja():
                     (3, venta[0]))
 
     # move Promociones from branch to warehouse
-    b_cursor.callproc("CierreCajaPromociones", (fecha,))
+    b_cursor.callproc("CierreCajaPromociones")
     for resultado in b_cursor.stored_results():
         for promocion in resultado.fetchall():
             print("Promocion")

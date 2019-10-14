@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>Label</key>
+		<string>org.sk8-4-tec.autoclose</string>
+		<key>WorkingDirectory</key>
+		<string>/Users/Jai/OneDrive/Bases\ de\ datos/Sk8-4-TEC-Proyecto-1/branch/scripts</string>
+		<key>Program</key>
+		<string>/Users/Jai/OneDrive/Bases\ de\ datos/Sk8-4-TEC-Proyecto-1/branch/scripts/close.sh</string>
+		<key>StartCalendarInterval</key>
+		<dict>
+			<key>Hour</key>
+			<integer>22</integer>
+			<key>Minute</key>
+			<integer>0</integer>
+		</dict>
+	</dict>
+</plist>

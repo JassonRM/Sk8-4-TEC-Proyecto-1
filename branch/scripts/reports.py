@@ -356,11 +356,11 @@ def devolucion(idArticulo, codigoFactura, idCliente, idEmpleado, fecha):
 
 if __name__ == "__main__":
     updateBranchDB("Ska8-4-TEC-Alajuela", "0.0.0.0", 3306, "root", "admin")
-    cierreCaja()
-    updateBranchDB("Ska8-4-TEC-Cartago", "0.0.0.0", 3307, "root", "admin")
-    cierreCaja()
-    updateBranchDB("Ska8-4-TEC-San-Jose", "0.0.0.0", 3308, "root", "admin")
-    cierreCaja()
+    # cierreCaja()
+    # updateBranchDB("Ska8-4-TEC-Cartago", "0.0.0.0", 3307, "root", "admin")
+    # cierreCaja()
+    # updateBranchDB("Ska8-4-TEC-San-Jose", "0.0.0.0", 3308, "root", "admin")
+    # cierreCaja()
 
     # Ejemplos
 
@@ -371,8 +371,8 @@ if __name__ == "__main__":
     # insertVenta([9, 15], "AMB123", fecha, 0.13,
     #             0.05,
     #             1, 13, 1)
-    # insertPromocion(17, "Mitad de precio", "2018-11-28 00:00:00", "2020-11-28 00:00:00", 50)
-    # insertVenta([20], "AMB250", fecha, 0.13,
-    #             0.05,
-    #             1, 13, 1)
+    # insertPromocion(17, "Mitad de precio", "2019-10-13 00:00:00", "2020-11-28 00:00:00", 50)
+    insertVenta([20], "AMB250", fecha, 0.13,
+                0.05,
+                1, 13, 1)
     # devolucion(20, "DEV001", 2, 13, fecha)

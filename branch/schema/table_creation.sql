@@ -220,4 +220,4 @@ CREATE TABLE IF NOT EXISTS Venta
 
     FOREIGN KEY (IdFactura)
         REFERENCES Factura (IdFactura)
-);
+)

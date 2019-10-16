@@ -86,6 +86,12 @@ def initBranches():
     metodos = warehousedb.fetchall()
 
     for i in range(0, len(branchList)):
+        # Create tables
+        sql_file = open('branch/schema/table_creation.sql', 'r', encoding='utf-8')
+        queries = sql_file.read().split(';')
+        for query in queries:
+            cursorList[i].execute(query)
+
         cursorList[i].executemany("INSERT INTO Pais (IdPais, Nombre) VALUES (%s, %s)",
                                   paises)
         cursorList[i].executemany("INSERT INTO Provincia (IdProvincia, Nombre, IdPais) VALUES (%s, %s, %s)",

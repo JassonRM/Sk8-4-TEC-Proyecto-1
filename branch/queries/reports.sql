@@ -64,7 +64,7 @@ DELIMITER ;
 DELIMITER //
 CREATE PROCEDURE GarantiaArticulo(IN IdArticulo INT)
 BEGIN
-    SELECT DATE_ADD(F.Fecha, INTERVAL S.Garantia MONTH)
+    SELECT DATE_ADD(F.Fecha, INTERVAL S.Garantia MONTH) AS Garantía
     FROM Factura F
              INNER JOIN Venta V ON F.IdFactura = V.IdFactura
              INNER JOIN Articulo A ON V.IdArticulo = A.IdArticulo
@@ -78,7 +78,7 @@ DELIMITER ;
 DELIMITER //
 CREATE PROCEDURE InicioPromocion(IN Fecha DATETIME, OUT Descuento INT)
 BEGIN
-    SELECT Descuento FROM Promocion WHERE Inicio = Fecha;
+    SELECT P.Descuento FROM Promocion P WHERE Inicio = Fecha INTO Descuento;
 END
 //
 DELIMITER ;
@@ -87,21 +87,10 @@ DELIMITER ;
 DELIMITER //
 CREATE PROCEDURE FinPromocion(IN Fecha DATETIME, OUT Descuento INT)
 BEGIN
-    SELECT Descuento FROM Promocion WHERE Fin = Fecha;
+    SELECT P.Descuento FROM Promocion P WHERE Fin = Fecha INTO Descuento;
 END
 //
 DELIMITER ;
-
-
-# DELIMITER //
-# CREATE PROCEDURE PuntosClientes()
-# BEGIN
-#     SELECT C.IdCliente, P.Nombre, C.Puntos
-#     FROM Cliente C
-#              INNER JOIN Persona P ON C.IdPersona = P.IdPersona;
-# END
-# //
-# DELIMITER ;
 
 
 DELIMITER //

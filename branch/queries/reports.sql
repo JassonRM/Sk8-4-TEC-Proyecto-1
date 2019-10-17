@@ -127,6 +127,3 @@ BEGIN
 END
 //
 DELIMITER ;
-
-
-CALL GarantiaArticulo(5)

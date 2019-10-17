@@ -152,7 +152,7 @@ def createDummyData():
     for i in range(1, CantidadSKUs + 1):
         codigo = codigos[i-1]
         categoria = randint(1, CantidadCategorias)
-        estado = randint(1, 2)
+        estado = 1
         precio = randrange(5000, 50000, 500)
         fecha = fechas[i-1]
         garantia = choice(garantias)

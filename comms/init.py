@@ -90,7 +90,8 @@ def initBranches():
         sql_file = open('branch/schema/table_creation.sql', 'r', encoding='utf-8')
         queries = sql_file.read().split(';')
         for query in queries:
-            cursorList[i].execute(query)
+            if query != None:
+                cursorList[i].execute(query)
 
         cursorList[i].executemany("INSERT INTO Pais (IdPais, Nombre) VALUES (%s, %s)",
                                   paises)
@@ -138,7 +139,7 @@ def initBranches():
             empleados)
 
         # SKUs
-        warehousedb.execute("SELECT sku.* FROM sku INNER JOIN sucursalsku s on sku.idsku = s.idsku WHERE idsucursal = %s", (i+1,))
+        warehousedb.execute("SELECT sku.* FROM sku INNER JOIN sucursalsku s on sku.idsku = s.idsku WHERE idsucursal = %s AND idestado = 1", (i+1,))
         skus = warehousedb.fetchall()
         cursorList[i].executemany("INSERT INTO SKU (IdSKU, Codigo, IdCategoria, IdEstado, PrecioActual, FechaRegistro, Garantia, DetalleUbicacion)  VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", skus)
 

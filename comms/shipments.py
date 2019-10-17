@@ -124,9 +124,13 @@ def generateShipments():
             "SELECT sku.* FROM sku INNER JOIN sucursalsku s on sku.idsku = s.idsku WHERE idsucursal = %s AND fecharegistro = %s",
             (i + 1, fecha))
         skus = warehousedb.fetchall()
-        cursorList[i].executemany(
-            "INSERT INTO SKU (IdSKU, Codigo, IdCategoria, IdEstado, PrecioActual, FechaRegistro, Garantia, DetalleUbicacion)  VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
-            skus)
+        for sku in skus:
+            try:
+                cursorList[i].execute(
+                    "INSERT INTO SKU (IdSKU, Codigo, IdCategoria, IdEstado, PrecioActual, FechaRegistro, Garantia, DetalleUbicacion)  VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+                    sku)
+            except:
+                print("SKU already shipped")
 
         # Articulos
         warehousedb.execute(
@@ -139,7 +143,7 @@ def generateShipments():
                     "INSERT INTO Articulo (IdArticulo, IdSKU, Codigo, IdEstadoArticulo) VALUES (%s, %s, %s, %s)",
                     articulo)
             except:
-                print("Already shipped")
+                print("Item already shipped")
 
         try:
             # Direccion

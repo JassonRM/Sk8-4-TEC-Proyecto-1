@@ -142,7 +142,7 @@ def createDummyData():
     # Fill table SKU
     codigos = gen.gen_data_series(CantidadSKUs, data_type='ssn')
     fechas = gen.gen_data_series(CantidadSKUs, data_type='date')
-    garantias = [7, 30, 60, 90, 365]
+    garantias = [1, 2, 3, 12]
     detalles = ['Mostrador', 'Ventana', 'Pasillo principal', 'Pasillo de acuerdo a la categoria']
 
     cur.execute("SELECT COUNT(*) FROM Categoria")

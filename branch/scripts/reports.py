@@ -271,10 +271,10 @@ def insertVenta(articulos, codigoFactura, fecha, porcentajeImpuestos, porcentaje
         # abort sale if Cliente doesn't have enough points
         if puntos < precioTotal * (1 + porcentajeImpuestos):
             b_cursor.execute(
-                "DELETE FROM Factura WHERE IdFactura = %s",
+                "DELETE FROM Venta WHERE IdFactura = %s",
                 (idFactura,))
             b_cursor.execute(
-                "DELETE FROM Venta WHERE IdFactura = %s",
+                "DELETE FROM Factura WHERE IdFactura = %s",
                 (idFactura,))
             branch.commit()
             for idArticulo in idArticulosVendidos:
@@ -285,7 +285,7 @@ def insertVenta(articulos, codigoFactura, fecha, porcentajeImpuestos, porcentaje
                 b_cursor.execute(
                     "DELETE FROM PromocionFactura WHERE IdFactura = %s",
                     (idFactura,))
-            puntosObtenidos = -1 * precioTotal * (1 + porcentajeImpuestos)
+        puntosObtenidos = -1 * precioTotal * (1 + porcentajeImpuestos)
     else:
         puntosObtenidos = precioTotal * porcentajePuntos
 

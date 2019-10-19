@@ -112,3 +112,11 @@ def cierreCaja():
     b_cursor.close()
     warehouse.close()
     branch.close()
+
+if __name__ == '__main__':
+    updateBranchDB("Ska8-4-TEC-Alajuela", "0.0.0.0", 3306, "root", "admin")
+    cierreCaja()
+    updateBranchDB("Ska8-4-TEC-Cartago", "0.0.0.0", 3307, "root", "admin")
+    cierreCaja()
+    updateBranchDB("Ska8-4-TEC-San-Jose", "0.0.0.0", 3308, "root", "admin")
+    cierreCaja()

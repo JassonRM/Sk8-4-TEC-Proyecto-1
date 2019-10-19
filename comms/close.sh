@@ -1,0 +1,1 @@
+python3 cash_desk_closing.py

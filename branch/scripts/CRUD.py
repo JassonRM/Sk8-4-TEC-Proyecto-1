@@ -108,7 +108,7 @@ def insertPromocion(idSKU, descripcion, inicio, fin, descuento):
     branch.close()
 
 
-def insertVenta(articulos, codigoFactura, fecha, porcentajeImpuestos, porcentajePuntos,
+def insertVenta(articulos, codigoFactura, porcentajeImpuestos, porcentajePuntos,
                 idCliente, idEmpleado, idMetodoPago):
     # Connect to an existing database and open a cursor to perform database operations
     branch = mysql.connector.connect(host=BRANCH_DB_HOST, port=BRANCH_DB_PORT, user=BRANCH_DB_USER, database=BRANCH_DB,
@@ -135,26 +135,30 @@ def insertVenta(articulos, codigoFactura, fecha, porcentajeImpuestos, porcentaje
         b_cursor.execute("SELECT A.IdArticulo, S.PrecioActual FROM SKU S INNER JOIN Articulo A ON S.IdSKU = A.IdSKU "
                          "WHERE A.IdArticulo = %s AND IdEstadoArticulo = %s", (idArticulo, estadoInventario))
 
-        if b_cursor.fetchone() == None:
+        articulo = b_cursor.fetchone()
+        if  articulo == None:
             break
 
-        idArticulosDisponibles.append(b_cursor.fetchone()[0])
-        precio = b_cursor.fetchone()[1]
+        idArticulosDisponibles.append(articulo[0])
+        precio = articulo[1]
         precios.append(precio)
 
         #get promociones for Articulo
         b_cursor.execute(
             "SELECT P.Descuento, P.IdPromocion FROM  SKU S INNER JOIN Promocion P  ON  S.IdSKU = P.IdSKU "
-            "INNER JOIN Articulo A ON P.IdSKU = A.IdSKU WHERE A.IdArticulo = %s AND P.Fin > %s",
+            "INNER JOIN Articulo A ON P.IdSKU = A.IdSKU WHERE A.IdArticulo = %s AND P.Fin > %s LIMIT 1",
             (idArticulo, fecha))
         promo = b_cursor.fetchone()
-        idPromociones.append(promo[1])
 
         #calculate total price
         if promo != None:
-            precioTotal += promo[0]/100 * precio
+            idPromociones.append(promo[1])
+            precioTotal += (1 - promo[0]/100) * precio
         else:
             precioTotal += precio
+
+    if len(idArticulosDisponibles) == 0:
+        return
 
     # calculate points
     puntosObtenidos = precioTotal * porcentajePuntos
@@ -174,7 +178,9 @@ def insertVenta(articulos, codigoFactura, fecha, porcentajeImpuestos, porcentaje
             " VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
             (codigoFactura, fecha, precioTotal, precioTotal * porcentajeImpuestos, puntosObtenidos, idCliente, idEmpleado, idMetodoPago))
 
-    b_cursor.execute("SELECT COUNT(*) FROM Facturas")
+    branch.commit()
+
+    b_cursor.execute("SELECT COUNT(*) FROM Factura")
     idFactura = b_cursor.fetchone()[0]
 
     # change state of Articulo to vendido
@@ -185,13 +191,13 @@ def insertVenta(articulos, codigoFactura, fecha, porcentajeImpuestos, porcentaje
     for promo in idPromociones:
         b_cursor.execute(
             "INSERT INTO PromocionFactura (IdPromocion, IdFactura) VALUES (%s, %s)",
-            (promo[1], idFactura))
+            (promo, idFactura))
 
     i = 0
     for precio in precios:
         b_cursor.execute(
             "INSERT INTO Venta (IdArticulo, IdFactura, Precio) VALUES (%s, %s, %s)",
-            (articulos[i], idFactura, precio))
+            (idArticulosDisponibles[i], idFactura, precio))
         i += 1
 
         # update Puntos for Cliente
@@ -209,7 +215,7 @@ def insertVenta(articulos, codigoFactura, fecha, porcentajeImpuestos, porcentaje
     branch.close()
 
 
-def devolucion(idArticulo, codigoFactura, idCliente, idEmpleado, fecha):
+def devolucion(idArticulo, codigoFactura, idCliente, idEmpleado):
     # Connect to an existing database and open a cursor to perform database operations
     branch = mysql.connector.connect(host=BRANCH_DB_HOST, port=BRANCH_DB_PORT, user=BRANCH_DB_USER, database=BRANCH_DB,
                                      passwd=BRANCH_DB_PASSWD)
@@ -217,12 +223,12 @@ def devolucion(idArticulo, codigoFactura, idCliente, idEmpleado, fecha):
 
     # Check Garantia date for Articulo
     b_cursor.callproc("GarantiaArticulo", (idArticulo,))
-    fecha = datetime.datetime.strptime(fecha, '%Y-%m-%d').date()
-    garantia = fecha
+    date = datetime.datetime.strptime(fecha, '%Y-%m-%d').date()
+    garantia = date
     for resultado in b_cursor.stored_results():
         garantia = resultado.fetchone()[0]
 
-    if fecha < garantia:
+    if date < garantia:
         # check Precio when it was sold
         b_cursor.execute(
             "SELECT V.Precio FROM Venta V INNER JOIN Articulo A ON V.IdArticulo = A.IdArticulo WHERE A.IdArticulo = %s",

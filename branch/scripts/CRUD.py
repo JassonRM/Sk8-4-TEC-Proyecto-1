@@ -168,7 +168,7 @@ def insertVenta(articulos, codigoFactura, porcentajeImpuestos, porcentajePuntos,
     puntosCliente = w_cursor.fetchone()[0]
 
     if idMetodoPago == 4:  # puntos
-        puntosObtenidos = -1 * puntosObtenidos
+        puntosObtenidos = -1 * precioTotal
         # abort sale if Cliente doesn't have enough points
         if puntosCliente < precioTotal * (1 + porcentajeImpuestos):
             return

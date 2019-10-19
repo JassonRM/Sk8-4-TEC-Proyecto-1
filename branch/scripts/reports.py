@@ -1,5 +1,6 @@
 import mysql.connector
 import csv
+import datetime
 
 BRANCH_DB = ""
 BRANCH_DB_HOST = "localhost"
@@ -28,7 +29,8 @@ def generateReports():
     b_cursor = branch.cursor()
 
     # create csv file
-    c = csv.writer(open('reporte_productos.csv', 'wb'))
+    fileName = 'reporte_productos-' + str(datetime.datetime.now()) +  '.csv'
+    c = csv.writer(open(fileName, 'w'))
 
     # fetch data
     b_cursor.callproc("ReporteProductos")
@@ -38,7 +40,8 @@ def generateReports():
             c.writerow(x)
 
     # create csv file
-    c = csv.writer(open('reporte_compras.csv', 'wb'))
+    fileName = 'reporte_compras-' + str(datetime.datetime.now()) + '.csv'
+    c = csv.writer(open(fileName, 'w'))
 
     #fetch data
     b_cursor.callproc("ReporteCompras")

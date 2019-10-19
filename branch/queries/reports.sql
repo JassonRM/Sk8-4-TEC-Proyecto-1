@@ -16,9 +16,9 @@ DELIMITER ;
 DELIMITER //
 CREATE PROCEDURE ReporteCompras()
 BEGIN
-    SELECT SUM(F.SubTotal) AS Total, COUNT(*) AS CantidadAnual
+    SELECT SUM(F.SubTotal) AS Total, COUNT(*) AS CantidadAnual, YEAR(F.Fecha) AS Año
     FROM Factura F
-    GROUP BY YEAR(F.Fecha)
+    GROUP BY Año
     ORDER BY CantidadAnual DESC;
 END
 //

@@ -97,7 +97,10 @@ def generateShipments():
         if len(itemlist) < len(storeNeeds) * 6:
 
             warehousedb.execute(
-                "SELECT P1.Nombre, P2.IdEncargado, S.Codigo, S.PrecioActual, S.Garantia, C1.Nombre, S.DetalleUbicacion, A.Costo FROM Pedido P2 INNER JOIN Proveedor P1 ON P2.IdProveedor = P1.IdProveedor INNER JOIN Articulo A ON A.IdPedido = P2.IdPedido INNER JOIN SKU S ON S.IdSKU = A.IdSKU INNER JOIN Categoria C1 ON C1.IdCategoria = S.IdCategoria WHERE S.IdSKU = %s",
+                "SELECT P1.Nombre, P2.IdEncargado, S.Codigo, S.PrecioActual, S.Garantia, C1.Nombre, S.DetalleUbicacion, A.Costo "
+                "FROM Pedido P2 INNER JOIN Proveedor P1 ON P2.IdProveedor = P1.IdProveedor "
+                "INNER JOIN Articulo A ON A.IdPedido = P2.IdPedido INNER JOIN SKU S ON S.IdSKU = A.IdSKU "
+                "INNER JOIN Categoria C1 ON C1.IdCategoria = S.IdCategoria WHERE S.IdSKU = %s",
                 (id,))
             pedido = warehousedb.fetchall()[0] + (50, [])
             print(pedido)
@@ -121,20 +124,23 @@ def generateShipments():
         # cursorList[i].execute("USE sk8;")
         # SKUs
         warehousedb.execute(
-            "SELECT sku.* FROM sku INNER JOIN sucursalsku s on sku.idsku = s.idsku WHERE idsucursal = %s AND fecharegistro = %s",
+            "SELECT S.* FROM SKU S INNER JOIN SucursalSKU SS ON S.IdSKU = SS.IdSKU WHERE IdSucursal = %s AND FechaRegistro = %s",
             (i + 1, fecha))
         skus = warehousedb.fetchall()
         for sku in skus:
             try:
                 cursorList[i].execute(
-                    "INSERT INTO SKU (IdSKU, Codigo, IdCategoria, IdEstado, PrecioActual, FechaRegistro, Garantia, DetalleUbicacion)  VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+                    "INSERT INTO SKU (IdSKU, Codigo, IdCategoria, IdEstado, PrecioActual, FechaRegistro, Garantia, DetalleUbicacion)  "
+                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
                     sku)
             except:
                 print("SKU already shipped")
 
         # Articulos
         warehousedb.execute(
-            "SELECT a.IdArticulo, a.IdSKU, a.Codigo, a.IdEstadoArticulo FROM articulo a INNER JOIN enviopaquete e on a.idarticulo = e.idarticulo INNER JOIN envio e2 on e.idenvio = e2.idenvio WHERE e2.idsucursal = %s AND e2.fecha = %s",
+            "SELECT A.IdArticulo, A.IdSKU, A.Codigo, A.IdEstadoArticulo FROM Articulo A INNER JOIN "
+            "EnvioPaquete EA ON A.IdArticulo = EA.IdArticulo INNER JOIN Envio E ON EA.IdEnvio = E.IdEnvio WHERE "
+            "E.IdSucursal = %s AND E.Fecha = %s",
             (i + 1, fecha))
         articulos = warehousedb.fetchall()
         for articulo in articulos:
@@ -148,7 +154,8 @@ def generateShipments():
         try:
             # Direccion
             warehousedb.execute(
-                "SELECT D.* FROM Direccion D INNER JOIN Persona P on D.iddireccion = P.iddireccion INNER JOIN Empleado E on P.idpersona = E.idpersona WHERE E.idsucursal = %s AND E.Fecha = %s",
+                "SELECT D.* FROM Direccion D INNER JOIN Persona P on D.IdDireccion = P.IdDireccion INNER JOIN Empleado E "
+                "ON P.IdPersona = E.IdPersona WHERE E.IdSucursal = %s AND E.Fecha = %s",
                 (i + 1, fecha))
             direcciones = warehousedb.fetchall()
 
@@ -158,12 +165,13 @@ def generateShipments():
 
             # Persona
             warehousedb.execute(
-                "SELECT P.* FROM Persona P INNER JOIN Empleado E on P.idpersona = E.idpersona WHERE E.idsucursal = %s AND E.Fecha = %s",
+                "SELECT P.* FROM Persona P INNER JOIN Empleado E on P.IdPersona = E.IdPersona WHERE E.IdSucursal = %s AND E.Fecha = %s",
                 (i + 1, fecha))
             personas = warehousedb.fetchall()
 
             cursorList[i].executemany(
-                "INSERT INTO Persona (IdPersona, Identificacion, Nombre, Apellido1, Apellido2, Telefono, Correo, FechaNacimiento, FechaRegistro, IdEstado, IdDireccion) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                "INSERT INTO Persona (IdPersona, Identificacion, Nombre, Apellido1, Apellido2, Telefono, Correo, "
+                "FechaNacimiento, FechaRegistro, IdEstado, IdDireccion) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
                 personas)
 
             # Empleado

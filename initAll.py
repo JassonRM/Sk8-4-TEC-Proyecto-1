@@ -2,7 +2,7 @@ from warehouse.scripts.dummy_data import *
 from warehouse.scripts.inserts import *
 from comms.init import *
 from comms.shipments import *
-from branch.scripts.reports import *
+from branch.scripts.CRUD import *
 
 # createDummyData()
 # initBranches()

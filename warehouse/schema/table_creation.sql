@@ -1,3 +1,4 @@
+-- Creates Estado and its structure
 CREATE TABLE IF NOT EXISTS Estado
 (
     IdEstado    SERIAL PRIMARY KEY,
@@ -5,6 +6,7 @@ CREATE TABLE IF NOT EXISTS Estado
 );
 
 
+-- Creates Pais and its structure
 CREATE TABLE IF NOT EXISTS Pais
 (
     IdPais SERIAL PRIMARY KEY,
@@ -12,6 +14,7 @@ CREATE TABLE IF NOT EXISTS Pais
 );
 
 
+-- Creates Provincia and its structure
 CREATE TABLE IF NOT EXISTS Provincia
 (
     IdProvincia SERIAL PRIMARY KEY,
@@ -23,6 +26,7 @@ CREATE TABLE IF NOT EXISTS Provincia
 );
 
 
+-- Creates Canton and its structure
 CREATE TABLE IF NOT EXISTS Canton
 (
     IdCanton    SERIAL PRIMARY KEY,
@@ -34,6 +38,7 @@ CREATE TABLE IF NOT EXISTS Canton
 );
 
 
+-- Creates Distrito and its structure
 CREATE TABLE IF NOT EXISTS Distrito
 (
     IdDistrito SERIAL PRIMARY KEY,
@@ -45,6 +50,7 @@ CREATE TABLE IF NOT EXISTS Distrito
 );
 
 
+-- Creates Direccion and its structure
 CREATE TABLE IF NOT EXISTS Direccion
 (
     IdDireccion SERIAL PRIMARY KEY,
@@ -57,6 +63,7 @@ CREATE TABLE IF NOT EXISTS Direccion
 );
 
 
+-- Creates Persona and its structure
 CREATE TABLE IF NOT EXISTS Persona
 (
     IdPersona       SERIAL PRIMARY KEY,
@@ -79,6 +86,7 @@ CREATE TABLE IF NOT EXISTS Persona
 );
 
 
+-- Creates Cliente and its structure
 CREATE TABLE IF NOT EXISTS Cliente
 (
     IdCliente     SERIAL PRIMARY KEY,
@@ -95,6 +103,7 @@ CREATE TABLE IF NOT EXISTS Cliente
 );
 
 
+-- Creates Puesto and its structure
 CREATE TABLE IF NOT EXISTS Puesto
 (
     IdPuesto    SERIAL PRIMARY KEY,
@@ -103,6 +112,7 @@ CREATE TABLE IF NOT EXISTS Puesto
 );
 
 
+-- Creates Sucursal and its structure
 CREATE TABLE IF NOT EXISTS Sucursal
 (
     IdSucursal  SERIAL PRIMARY KEY,
@@ -120,6 +130,7 @@ CREATE TABLE IF NOT EXISTS Sucursal
 );
 
 
+-- Creates Empleado and its structure
 CREATE TABLE IF NOT EXISTS Empleado
 (
     IdEmpleado SERIAL PRIMARY KEY,
@@ -144,6 +155,7 @@ CREATE TABLE IF NOT EXISTS Empleado
 );
 
 
+-- Creates Categoria and its structure
 CREATE TABLE IF NOT EXISTS Categoria
 (
     IdCategoria SERIAL PRIMARY KEY,
@@ -152,6 +164,7 @@ CREATE TABLE IF NOT EXISTS Categoria
 );
 
 
+-- Creates SKU and its structure
 CREATE TABLE IF NOT EXISTS SKU
 (
     IdSKU            SERIAL PRIMARY KEY,
@@ -170,6 +183,8 @@ CREATE TABLE IF NOT EXISTS SKU
         REFERENCES Estado (IdEstado)
 );
 
+
+-- Creates Proveedor and its structure
 CREATE TABLE IF NOT EXISTS Proveedor
 (
     IdProveedor SERIAL PRIMARY KEY,
@@ -180,6 +195,8 @@ CREATE TABLE IF NOT EXISTS Proveedor
         REFERENCES Estado (IdEstado)
 );
 
+
+-- Creates Pedido and its structure
 CREATE TABLE IF NOT EXISTS Pedido
 (
     IdPedido    SERIAL PRIMARY KEY,
@@ -195,6 +212,7 @@ CREATE TABLE IF NOT EXISTS Pedido
 );
 
 
+-- Creates EstadoArticulo and its structure
 CREATE TABLE IF NOT EXISTS EstadoArticulo
 (
     IdEstadoArticulo SERIAL PRIMARY KEY,
@@ -202,6 +220,7 @@ CREATE TABLE IF NOT EXISTS EstadoArticulo
 );
 
 
+-- Creates Articulo and its structure
 CREATE TABLE IF NOT EXISTS Articulo
 (
     IdArticulo       SERIAL PRIMARY KEY,
@@ -226,6 +245,8 @@ CREATE TABLE IF NOT EXISTS Articulo
 
 );
 
+
+-- Creates Sucursal and its structure
 CREATE TABLE IF NOT EXISTS Sucursal
 (
     IdSucursal  SERIAL PRIMARY KEY,
@@ -243,6 +264,7 @@ CREATE TABLE IF NOT EXISTS Sucursal
 );
 
 
+-- Creates SucursalSKU and its structure
 CREATE TABLE IF NOT EXISTS SucursalSKU
 (
     IdSucursal INT NOT NULL,
@@ -255,6 +277,8 @@ CREATE TABLE IF NOT EXISTS SucursalSKU
         REFERENCES SKU (IdSKU)
 );
 
+
+-- Creates Camion and its structure
 CREATE TABLE IF NOT EXISTS Camion
 (
     IdCamion SERIAL PRIMARY KEY,
@@ -267,6 +291,7 @@ CREATE TABLE IF NOT EXISTS Camion
 );
 
 
+-- Creates Envio and its structure
 CREATE TABLE IF NOT EXISTS Envio
 (
     IdEnvio     SERIAL PRIMARY KEY,
@@ -286,6 +311,7 @@ CREATE TABLE IF NOT EXISTS Envio
 );
 
 
+-- Creates EnvioPaquete and its structure
 CREATE TABLE IF NOT EXISTS EnvioPaquete
 (
     IdEnvio    INT NOT NULL,
@@ -298,6 +324,8 @@ CREATE TABLE IF NOT EXISTS EnvioPaquete
         REFERENCES Articulo (IdArticulo)
 );
 
+
+-- Creates MetodoPago and its structure
 CREATE TABLE IF NOT EXISTS MetodoPago
 (
     IdMetodoPago SERIAL PRIMARY KEY,
@@ -306,6 +334,7 @@ CREATE TABLE IF NOT EXISTS MetodoPago
 );
 
 
+-- Creates Promocion and its structure
 CREATE TABLE IF NOT EXISTS Promocion
 (
     IdPromocion         SERIAL PRIMARY KEY,
@@ -325,6 +354,7 @@ CREATE TABLE IF NOT EXISTS Promocion
 );
 
 
+-- Creates Factura and its structure
 CREATE TABLE IF NOT EXISTS Factura
 (
     IdFactura         SERIAL PRIMARY KEY,
@@ -352,6 +382,8 @@ CREATE TABLE IF NOT EXISTS Factura
         REFERENCES MetodoPago (IdMetodoPago)
 );
 
+
+-- Creates PromocionFactura and its structure
 CREATE TABLE IF NOT EXISTS PromocionFactura
 (
     IdPromocion INT NOT NULL,
@@ -364,6 +396,8 @@ CREATE TABLE IF NOT EXISTS PromocionFactura
         REFERENCES Factura (IdFactura)
 );
 
+
+-- Creates Venta and its structure
 CREATE TABLE IF NOT EXISTS Venta
 (
     IdArticulo INT NOT NULL,

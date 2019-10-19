@@ -23,7 +23,7 @@ def createDummyData():
     cur.execute(sql_file.read())
 
     # Create procedures
-    sql_file = open('warehouse/schema/procedures.sql','r', encoding='utf-8')
+    sql_file = open('warehouse/queries/reports.sql','r', encoding='utf-8')
     cur.execute(sql_file.read())
 
     # Execute the inserts on each table
@@ -114,8 +114,12 @@ def createDummyData():
         empleados.append((i, i, puesto, sucursal, salario, fecha, estado))
 
     cur.executemany("INSERT INTO Direccion (IdDireccion, IdDistrito, Detalle1, Detalle2) VALUES (%s, %s, %s, %s)", direcciones)
-    cur.executemany("INSERT INTO Persona (IdPersona, Identificacion, Nombre, Apellido1, Apellido2, Telefono, Correo, FechaNacimiento, FechaRegistro, IdEstado, IdDireccion) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", personas)
-    cur.executemany("INSERT INTO Empleado (IdEmpleado, IdPersona, IdPuesto, IdSucursal, Salario, Fecha, IdEstado) VALUES (%s, %s, %s, %s, %s, %s, %s)", empleados)
+
+    cur.executemany("INSERT INTO Persona (IdPersona, Identificacion, Nombre, Apellido1, Apellido2, Telefono, Correo, "
+                    "FechaNacimiento, FechaRegistro, IdEstado, IdDireccion) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", personas)
+
+    cur.executemany("INSERT INTO Empleado (IdEmpleado, IdPersona, IdPuesto, IdSucursal, Salario, Fecha, IdEstado) "
+                    "VALUES (%s, %s, %s, %s, %s, %s, %s)", empleados)
 
 
     # Fill table Proveedor
@@ -158,7 +162,8 @@ def createDummyData():
         garantia = choice(garantias)
         detalle = choice(detalles)
         skus.append((i, codigo, categoria, estado, precio, fecha, garantia, detalle))
-    cur.executemany("INSERT INTO SKU (IdSKU, Codigo, IdCategoria, IdEstado, PrecioActual, FechaRegistro, Garantia, DetalleUbicacion)  VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", skus)
+    cur.executemany("INSERT INTO SKU (IdSKU, Codigo, IdCategoria, IdEstado, PrecioActual, FechaRegistro, Garantia, DetalleUbicacion)  "
+                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", skus)
 
     # Fill table SucursalSKU
     sucursalSKUs = []
@@ -186,7 +191,8 @@ def createDummyData():
         costo = randrange(500, 10000, 500)
         pedido = randint(1, CantidadPedidos)
         articulos.append((i, sku, codigo, costo, pedido, 1))
-    cur.executemany("INSERT INTO Articulo (IdArticulo, IdSKU, Codigo, Costo, IdPedido, IdEstadoArticulo)  VALUES (%s, %s, %s, %s, %s, %s)", articulos)
+    cur.executemany("INSERT INTO Articulo (IdArticulo, IdSKU, Codigo, Costo, IdPedido, IdEstadoArticulo)  "
+                    "VALUES (%s, %s, %s, %s, %s, %s)", articulos)
 
 
     # Make the changes to the database persistent

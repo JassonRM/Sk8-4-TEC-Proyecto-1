@@ -1,12 +1,4 @@
-CREATE PROCEDURE CambiarEstado(IN id INT, IN estado INT)
-LANGUAGE SQL
-AS $$
-UPDATE articulo
-SET idestadoarticulo = estado
-WHERE idarticulo = id
-$$;
-
-
+-- Gets characteristic information about a Cliente and its points
 CREATE PROCEDURE PuntosClientes()
 LANGUAGE SQL
 AS $$

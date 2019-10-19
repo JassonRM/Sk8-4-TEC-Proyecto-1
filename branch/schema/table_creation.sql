@@ -1,3 +1,4 @@
+# Creates Estado and its structure
 CREATE TABLE IF NOT EXISTS Estado
 (
     IdEstado    INT AUTO_INCREMENT PRIMARY KEY,
@@ -5,6 +6,7 @@ CREATE TABLE IF NOT EXISTS Estado
 );
 
 
+# Creates Pais and its structure
 CREATE TABLE IF NOT EXISTS Pais
 (
     IdPais INT AUTO_INCREMENT PRIMARY KEY,
@@ -12,6 +14,7 @@ CREATE TABLE IF NOT EXISTS Pais
 );
 
 
+# Creates Provincia and its structure
 CREATE TABLE IF NOT EXISTS Provincia
 (
     IdProvincia INT AUTO_INCREMENT PRIMARY KEY,
@@ -23,6 +26,7 @@ CREATE TABLE IF NOT EXISTS Provincia
 );
 
 
+# Creates Canton and its structure
 CREATE TABLE IF NOT EXISTS Canton
 (
     IdCanton    INT AUTO_INCREMENT PRIMARY KEY,
@@ -34,6 +38,7 @@ CREATE TABLE IF NOT EXISTS Canton
 );
 
 
+# Creates Distrito and its structure
 CREATE TABLE IF NOT EXISTS Distrito
 (
     IdDistrito INT AUTO_INCREMENT PRIMARY KEY,
@@ -45,6 +50,7 @@ CREATE TABLE IF NOT EXISTS Distrito
 );
 
 
+# Creates Direccion and its structure
 CREATE TABLE IF NOT EXISTS Direccion
 (
     IdDireccion INT AUTO_INCREMENT PRIMARY KEY,
@@ -57,6 +63,7 @@ CREATE TABLE IF NOT EXISTS Direccion
 );
 
 
+# Creates Persona and its structure
 CREATE TABLE IF NOT EXISTS Persona
 (
     IdPersona       INT AUTO_INCREMENT PRIMARY KEY,
@@ -79,6 +86,7 @@ CREATE TABLE IF NOT EXISTS Persona
 );
 
 
+# Creates Puesto and its structure
 CREATE TABLE IF NOT EXISTS Puesto
 (
     IdPuesto    INT AUTO_INCREMENT PRIMARY KEY,
@@ -87,6 +95,7 @@ CREATE TABLE IF NOT EXISTS Puesto
 );
 
 
+# Creates Empleado and its structure
 CREATE TABLE IF NOT EXISTS Empleado
 (
     IdEmpleado INT AUTO_INCREMENT PRIMARY KEY,
@@ -107,6 +116,7 @@ CREATE TABLE IF NOT EXISTS Empleado
 );
 
 
+# Creates Categoria and its structure
 CREATE TABLE IF NOT EXISTS Categoria
 (
     IdCategoria INT AUTO_INCREMENT PRIMARY KEY,
@@ -115,6 +125,7 @@ CREATE TABLE IF NOT EXISTS Categoria
 );
 
 
+# Creates SKU and its structure
 CREATE TABLE IF NOT EXISTS SKU
 (
     IdSKU            INT AUTO_INCREMENT PRIMARY KEY,
@@ -134,12 +145,15 @@ CREATE TABLE IF NOT EXISTS SKU
 );
 
 
+# Creates EstadoArticulo and its structure
 CREATE TABLE IF NOT EXISTS EstadoArticulo
 (
     IdEstadoArticulo INT AUTO_INCREMENT PRIMARY KEY,
     Nombre           VARCHAR(40)
 );
 
+
+# Creates Articulo and its structure
 CREATE TABLE IF NOT EXISTS Articulo
 (
     IdArticulo       INT AUTO_INCREMENT PRIMARY KEY,
@@ -156,6 +170,7 @@ CREATE TABLE IF NOT EXISTS Articulo
 );
 
 
+# Creates MetodoPago and its structure
 CREATE TABLE IF NOT EXISTS MetodoPago
 (
     IdMetodoPago INT AUTO_INCREMENT PRIMARY KEY,
@@ -164,6 +179,7 @@ CREATE TABLE IF NOT EXISTS MetodoPago
 );
 
 
+# Creates Promocion and its structure
 CREATE TABLE IF NOT EXISTS Promocion
 (
     IdPromocion INT AUTO_INCREMENT PRIMARY KEY,
@@ -178,6 +194,7 @@ CREATE TABLE IF NOT EXISTS Promocion
 );
 
 
+# Creates Factura and its structure
 CREATE TABLE IF NOT EXISTS Factura
 (
     IdFactura       INT AUTO_INCREMENT PRIMARY KEY,
@@ -197,6 +214,8 @@ CREATE TABLE IF NOT EXISTS Factura
         REFERENCES MetodoPago (IdMetodoPago)
 );
 
+
+# Creates PromocionFactura and its structure
 CREATE TABLE IF NOT EXISTS PromocionFactura
 (
     IdPromocion INT NOT NULL,
@@ -209,6 +228,8 @@ CREATE TABLE IF NOT EXISTS PromocionFactura
         REFERENCES Factura (IdFactura)
 );
 
+
+# Creates Venta and its structure
 CREATE TABLE IF NOT EXISTS Venta
 (
     IdArticulo INT NOT NULL,

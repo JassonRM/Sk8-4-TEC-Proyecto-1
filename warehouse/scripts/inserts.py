@@ -4,14 +4,15 @@ import datetime
 
 fecha = datetime.datetime.now().strftime("%Y-%m-%d")
 
-def insertEmpleado(identificacion, nombre, apellido1, apellido2, telefono, correo, fechaNacimiento, direccion1, direccion2, iddistrito, puesto, codSucursal, salario):
+def insertEmpleado(identificacion, nombre, apellido1, apellido2, telefono, correo, fechaNacimiento, direccion1,
+                   direccion2, iddistrito, puesto, codSucursal, salario):
 
     # Connect to an existing database and open a cursor to perform database operations
     conn = psycopg2.connect(dbname="postgres", user="postgres", password="admin")
     cur = conn.cursor()
 
     # Check if Persona exists
-    cur.execute("SELECT IdPersona FROM persona where identificacion = %s", (identificacion,))
+    cur.execute("SELECT IdPersona FROM Persona WHERE Identificacion = %s", (identificacion,))
     idpersona = cur.fetchone()
     if idpersona != None:
         idpersona = idpersona[0]
@@ -30,17 +31,18 @@ def insertEmpleado(identificacion, nombre, apellido1, apellido2, telefono, corre
         idpersona = CantidadPersonas + 1
         persona = (idpersona, identificacion, nombre, apellido1, apellido2, telefono, correo, fechaNacimiento, fecha, 1, CantidadDirecciones + 1)
         cur.execute(
-            "INSERT INTO Persona (IdPersona, Identificacion, Nombre, Apellido1, Apellido2, Telefono, Correo, FechaNacimiento, FechaRegistro, IdEstado, IdDireccion) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            "INSERT INTO Persona (IdPersona, Identificacion, Nombre, Apellido1, Apellido2, Telefono, Correo, "
+            "FechaNacimiento, FechaRegistro, IdEstado, IdDireccion) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
             persona)
 
     # Insert Empleado
 
     cur.execute("SELECT COUNT(*) FROM Empleado")
     CantidadEmpleados = cur.fetchone()[0]
-    cur.execute("SELECT IdSucursal FROM sucursal where codigo = %s",
+    cur.execute("SELECT IdSucursal FROM Sucursal WHERE Codigo = %s",
                 (codSucursal,))
     sucursal = cur.fetchone()[0]
-    cur.execute("SELECT IdPuesto FROM puesto where nombre = %s",
+    cur.execute("SELECT IdPuesto FROM Puesto WHERE Nombre = %s",
                 (puesto,))
     puesto = cur.fetchone()[0]
     estado = 1
@@ -67,7 +69,7 @@ def insertPedido(proveedor, idempleado, codigoSKU, precioSKU, garantia, categori
     conn = psycopg2.connect(dbname="postgres", user="postgres", password="admin")
     cur = conn.cursor()
 
-    cur.execute("SELECT IdProveedor FROM proveedor where nombre = %s",
+    cur.execute("SELECT IdProveedor FROM Proveedor WHERE Nombre = %s",
                 (proveedor,))
     idproveedor = cur.fetchone()[0]
 
@@ -77,7 +79,7 @@ def insertPedido(proveedor, idempleado, codigoSKU, precioSKU, garantia, categori
     pedido = (idpedido, fecha, idproveedor, idempleado)
     cur.execute("INSERT INTO Pedido (IdPedido, Fecha, IdProveedor, IdEncargado) VALUES (%s, %s, %s, %s)", pedido)
 
-    cur.execute("SELECT IdSKU FROM SKU where codigo = %s", (codigoSKU,))
+    cur.execute("SELECT IdSKU FROM SKU WHERE Codigo = %s", (codigoSKU,))
     idsku = cur.fetchone()
     if idsku != None:
         idsku = idsku[0]
@@ -86,13 +88,14 @@ def insertPedido(proveedor, idempleado, codigoSKU, precioSKU, garantia, categori
         cur.execute("SELECT COUNT(*) FROM SKU")
         CantidadSKUs = cur.fetchone()[0]
 
-        cur.execute("SELECT idcategoria FROM Categoria where nombre = %s", (categoria,))
+        cur.execute("SELECT IdCategoria FROM Categoria WHERE Nombre = %s", (categoria,))
         idcategoria = cur.fetchone()
         estado = 1
         idsku = CantidadSKUs + 1
         sku = (idsku, codigoSKU, idcategoria, estado, precioSKU, fecha, garantia, detalleUbicacion)
         cur.execute(
-        "INSERT INTO SKU (IdSKU, Codigo, IdCategoria, IdEstado, PrecioActual, FechaRegistro, Garantia, DetalleUbicacion)  VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+        "INSERT INTO SKU (IdSKU, Codigo, IdCategoria, IdEstado, PrecioActual, FechaRegistro, Garantia, DetalleUbicacion)"
+        "VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
         sku)
 
         # Assign SKU to Sucursal

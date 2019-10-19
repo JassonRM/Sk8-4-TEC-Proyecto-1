@@ -3,7 +3,7 @@
 <plist version="1.0">
 	<dict>
 		<key>Label</key>
-		<string>org.sk8-4-tec.autoship</string>
+		<string>com.sk8-4-tec.autoship</string>
 		<key>WorkingDirectory</key>
 		<string>/Users/Jai/OneDrive/Bases\ de\ datos/Sk8-4-TEC-Proyecto-1/comms/</string>
 		<key>Program</key>

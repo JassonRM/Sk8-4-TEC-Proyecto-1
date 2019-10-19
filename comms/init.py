@@ -113,7 +113,8 @@ def initBranches():
             metodos)
 
         # Direccion
-        warehousedb.execute("SELECT D.* FROM Direccion D INNER JOIN Persona P on D.iddireccion = P.iddireccion INNER JOIN Empleado E on P.idpersona = E.idpersona WHERE E.idsucursal = %s", (i+1,))
+        warehousedb.execute("SELECT D.* FROM Direccion D INNER JOIN Persona P on D.iddireccion = P.iddireccion "
+                            "INNER JOIN Empleado E on P.idpersona = E.idpersona WHERE E.idsucursal = %s", (i+1,))
         direcciones = warehousedb.fetchall()
 
         cursorList[i].executemany(
@@ -125,7 +126,8 @@ def initBranches():
         personas = warehousedb.fetchall()
 
         cursorList[i].executemany(
-            "INSERT INTO Persona (IdPersona, Identificacion, Nombre, Apellido1, Apellido2, Telefono, Correo, FechaNacimiento, FechaRegistro, IdEstado, IdDireccion) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            "INSERT INTO Persona (IdPersona, Identificacion, Nombre, Apellido1, Apellido2, Telefono, Correo, FechaNacimiento,"
+            " FechaRegistro, IdEstado, IdDireccion) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
             personas)
 
         # Empleado
@@ -139,9 +141,11 @@ def initBranches():
             empleados)
 
         # SKUs
-        warehousedb.execute("SELECT sku.* FROM sku INNER JOIN sucursalsku s on sku.idsku = s.idsku WHERE idsucursal = %s AND idestado = 1", (i+1,))
+        warehousedb.execute("SELECT sku.* FROM sku INNER JOIN sucursalsku s on sku.idsku = s.idsku WHERE idsucursal = %s "
+                            "AND idestado = 1", (i+1,))
         skus = warehousedb.fetchall()
-        cursorList[i].executemany("INSERT INTO SKU (IdSKU, Codigo, IdCategoria, IdEstado, PrecioActual, FechaRegistro, Garantia, DetalleUbicacion)  VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", skus)
+        cursorList[i].executemany("INSERT INTO SKU (IdSKU, Codigo, IdCategoria, IdEstado, PrecioActual, FechaRegistro, "
+                                  "Garantia, DetalleUbicacion)  VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", skus)
 
         branchList[i].commit()
         cursorList[i].close()
